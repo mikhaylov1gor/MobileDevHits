@@ -8,15 +8,16 @@
 
     <ImageView
         android:id="@+id/currentPhoto"
-        android:layout_width="415dp"
-        android:layout_height="800dp"
+        android:layout_width="300dp"
+        android:layout_height="500dp"
         android:contentDescription="@string/photo"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.28"
+        app:layout_constraintVertical_bias="0.389"
         tools:srcCompat="@tools:sample/avatars" />
 
     <HorizontalScrollView
@@ -36,66 +37,98 @@
             android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/rotate"
+                style="@android:style/Widget.ImageButton"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:background="#00FF0000"
                 android:contentDescription="@string/rotate"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_rotate"
+                tools:src="@drawable/ic_rotate"
                 tools:srcCompat="@drawable/ic_rotate" />
 
             <ImageButton
+                android:id="@+id/color"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:background="#00FF0000"
                 android:contentDescription="@string/color"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_color_correction"
+                tools:src="@drawable/ic_color_correction"
                 tools:srcCompat="@drawable/ic_color_correction" />
 
             <ImageButton
+                android:id="@+id/scale"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:background="#00FF0000"
                 android:contentDescription="@string/scale"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_scale"
+                tools:src="@drawable/ic_scale"
                 tools:srcCompat="@drawable/ic_scale" />
 
             <ImageButton
+                android:id="@+id/face"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:background="#00FF0000"
                 android:contentDescription="@string/face"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_face"
+                tools:src="@drawable/ic_face"
                 tools:srcCompat="@drawable/ic_face" />
 
             <ImageButton
+                android:id="@+id/vector_edit"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:background="#00FF0000"
                 android:contentDescription="@string/vector_edit"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_vector_editor"
                 tools:srcCompat="@drawable/ic_vector_editor" />
 
             <ImageButton
+                android:id="@+id/retouch"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/retouch"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_retouch"
                 tools:srcCompat="@drawable/ic_retouch" />
 
             <ImageButton
+                android:id="@+id/blur"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/blur"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_blur"
                 tools:srcCompat="@drawable/ic_blur" />
 
             <ImageButton
+                android:id="@+id/affine"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/affine"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_affine"
                 tools:srcCompat="@drawable/ic_affine" />
 
             <ImageButton
+                android:id="@+id/dice"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/dice"
                 android:scaleType="fitCenter"
+                android:src="@drawable/ic_dice"
                 tools:srcCompat="@drawable/ic_dice" />
 
         </LinearLayout>
@@ -105,12 +138,13 @@
         android:id="@+id/button_return_2"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="@+id/currentPhoto"
         app:layout_constraintEnd_toEndOf="@+id/currentPhoto"
-        app:layout_constraintHorizontal_bias="0.076"
+        app:layout_constraintHorizontal_bias="0.052"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/currentPhoto"
-        app:layout_constraintVertical_bias="0.059"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.109"
         app:srcCompat="@drawable/corner_up_left" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
