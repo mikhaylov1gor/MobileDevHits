@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/currentPhoto"
+        android:layout_width="413dp"
+        android:layout_height="855dp"
+        android:contentDescription="@string/photo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <HorizontalScrollView
+        android:id="@+id/toolsScroller"
+        android:layout_width="409dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentPhoto">
+
+        <LinearLayout
+            android:id="@+id/toolList"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_rotate"
+                android:contentDescription="@string/rotate" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_color_correction"
+                android:contentDescription="@string/color" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_scale"
+                android:contentDescription="@string/scale" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_face"
+                android:contentDescription="@string/face" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_vector_editor"
+                android:contentDescription="@string/vector_edit" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_retouch"
+                android:contentDescription="@string/retouch" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_blur"
+                android:contentDescription="@string/blur" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_affine"
+                android:contentDescription="@string/affine" />
+
+            <ImageButton
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                tools:srcCompat="@drawable/ic_dice"
+                android:contentDescription="@string/dice" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ImageButton
+        android:id="@+id/button_return_2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/currentPhoto"
+        app:layout_constraintEnd_toEndOf="@+id/currentPhoto"
+        app:layout_constraintHorizontal_bias="0.076"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/currentPhoto"
+        app:layout_constraintVertical_bias="0.059"
+        app:srcCompat="@drawable/corner_up_left" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

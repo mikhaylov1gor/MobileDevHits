@@ -22,6 +22,7 @@ class CameraActivity : AppCompatActivity() {
         setContentView(R.layout.activity_camera)
 
         imageView = findViewById(R.id.imageView)
+
         val takePictureButton: ImageButton = findViewById(R.id.button_take_picture)
         takePictureButton.setOnClickListener {
             if (checkCameraPermission()) {

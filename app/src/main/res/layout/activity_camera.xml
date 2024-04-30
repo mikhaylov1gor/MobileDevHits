@@ -20,8 +20,8 @@
 
     <ImageButton
         android:id="@+id/button_take_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="13dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,12 +33,12 @@
 
     <ImageButton
         android:id="@+id/button_return"
-        android:layout_width="54dp"
-        android:layout_height="45dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:onClick="openCamera"
         app:layout_constraintBottom_toBottomOf="@+id/button_take_picture"
         app:layout_constraintEnd_toStartOf="@+id/button_take_picture"
-        app:layout_constraintHorizontal_bias="0.466"
+        app:layout_constraintHorizontal_bias="0.161"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:layout_constraintVertical_bias="1.0"

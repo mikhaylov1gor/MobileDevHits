@@ -46,6 +46,12 @@ class MainActivity : AppCompatActivity() {
          this@MainActivity.startActivity(intent)
      }
 
+    private fun openToolSelector(image: Uri){
+        val intent: Intent = Intent(this@MainActivity, ChooseToolActivity::class.java)
+        intent.putExtra("currentPhoto", image)
+        this@MainActivity.startActivity(intent)
+    }
+
 
     private val PICK_IMAGE_REQUEST = 1
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -79,7 +85,12 @@ class MainActivity : AppCompatActivity() {
         linearLayout.removeAllViews()
 
         for (imageUri in imageList) {
-            val imageView = ImageView(this)
+            val imageView = ImageButton(this)
+
+            imageView.setOnClickListener{
+                openToolSelector(imageUri)
+            }
+
             imageView.setImageURI(imageUri)
             linearLayout.addView(imageView)
         }
