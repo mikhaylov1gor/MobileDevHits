@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -79,9 +80,17 @@ class MainActivity : AppCompatActivity() {
         linearLayout.removeAllViews()
 
         for (imageUri in imageList) {
-            val imageView = ImageView(this)
-            imageView.setImageURI(imageUri)
-            linearLayout.addView(imageView)
+            val imageButton = ImageButton(this)
+
+            val buttonSize = 1000
+            val layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize)
+            layoutParams.setMargins(16, 16, 16, 16)
+            layoutParams.gravity = Gravity.CENTER
+            imageButton.layoutParams = layoutParams
+            imageButton.scaleType = ImageView.ScaleType.CENTER_CROP
+
+            imageButton.setImageURI(imageUri)
+            linearLayout.addView(imageButton)
         }
     }
 }
