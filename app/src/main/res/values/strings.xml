@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">mobile dev hits</string>
+    <string name="rotate">ROTATE</string>
+    <string name="color">COLOR</string>
+    <string name="scale">TODO</string>
+    <string name="face">TODO</string>
+    <string name="vector_edit">TODO</string>
+    <string name="retouch">TODO</string>
+    <string name="blur">TODO</string>
+    <string name="affine">TODO</string>
+    <string name="dice">TODO</string>
+    <string name="button_return_back">button_return_back</string>
+    <string name="photo" />
 </resources>

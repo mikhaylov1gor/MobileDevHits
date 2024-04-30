@@ -53,10 +53,12 @@
 
     <ScrollView
         android:id="@+id/PhotosScrollView"
-        android:layout_width="409dp"
-        android:layout_height="653dp"
-        app:layout_constraintTop_toBottomOf="@+id/ShowGalleryButton"
-        tools:layout_editor_absoluteX="1dp">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ShowGalleryButton">
 
         <LinearLayout
             android:id="@+id/PhotosLinearLayout"
@@ -64,5 +66,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
     </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
