@@ -7,7 +7,9 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -20,13 +22,18 @@ class CameraActivity : AppCompatActivity() {
         setContentView(R.layout.activity_camera)
 
         imageView = findViewById(R.id.imageView)
-        val takePictureButton: Button = findViewById(R.id.button_take_picture)
+        val takePictureButton: ImageButton = findViewById(R.id.button_take_picture)
         takePictureButton.setOnClickListener {
             if (checkCameraPermission()) {
                 dispatchTakePictureIntent()
             } else {
                 requestCameraPermission()
             }
+        }
+
+        val returnButton: ImageButton = findViewById(R.id.button_return)
+        returnButton.setOnClickListener{
+            returnBack()
         }
     }
 
@@ -43,6 +50,15 @@ class CameraActivity : AppCompatActivity() {
         if (takePictureIntent.resolveActivity(packageManager) != null) {
             startActivityForResult(takePictureIntent, permissionCode)
         }
+    }
+
+    private fun returnBack(){
+        val intent: Intent = Intent(
+            this@CameraActivity,
+            MainActivity::class.java
+        )
+
+        this@CameraActivity.startActivity(intent)
     }
 
     override fun onRequestPermissionsResult(

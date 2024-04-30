@@ -41,18 +41,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-     fun openCamera(view: View){
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), permissionCode)
-        }
-
-         val intent: Intent = Intent(
-             this@MainActivity,
-             CameraActivity::class.java
-         )
-
+     fun openCamera(view: View) {
+         val intent: Intent = Intent(this@MainActivity, CameraActivity::class.java)
          this@MainActivity.startActivity(intent)
-    }
+     }
+
 
     private val PICK_IMAGE_REQUEST = 1
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
