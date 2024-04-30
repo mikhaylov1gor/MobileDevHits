@@ -48,11 +48,10 @@ class MainActivity : AppCompatActivity() {
      }
 
     private fun openToolSelector(image: Uri){
-        val intent: Intent = Intent(this@MainActivity, ChooseToolActivity::class.java)
+        val intent: Intent = Intent(this@MainActivity, ChooseFilterActivity::class.java)
         intent.putExtra("currentPhoto", image)
         this@MainActivity.startActivity(intent)
     }
-
 
     private val PICK_IMAGE_REQUEST = 1
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
