@@ -2,6 +2,7 @@ package com.hitsmobiledev.mobiledevhits
 
 import android.Manifest
 import android.R.attr.value
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -52,29 +53,32 @@ class MainActivity : AppCompatActivity() {
 
          this@MainActivity.startActivity(intent)
     }
-    private fun loadGalleryPhotos () {
-        val imageList = ArrayList<Uri>()
-        val projection = arrayOf(MediaStore.Images.Media._ID)
-        val cursor = contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            null,
-            null,
-            null
-        )
-        cursor?.use {
-            val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            val limit = 10
-            var count = 0
-            while (it.moveToNext() && count < limit) {
-                count++
-                val imageId = it.getLong(columnIndex)
-                val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                val imageUri = Uri.withAppendedPath(contentUri, imageId.toString())
-                imageList.add(imageUri)
+
+    private val PICK_IMAGE_REQUEST = 1
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            val selectedImages = mutableListOf<Uri>()
+            if (data.clipData != null) {
+                val clipData = data.clipData
+                for (i in 0 until clipData!!.itemCount) {
+                    val uri = clipData.getItemAt(i).uri
+                    selectedImages.add(uri)
+                }
+            } else if (data.data != null) {
+                val uri = data.data!!
+                selectedImages.add(uri)
             }
+
+            displayGalleryPhotos(selectedImages)
         }
-        displayGalleryPhotos(imageList)
+    }
+    private fun loadGalleryPhotos() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        startActivityForResult(intent, PICK_IMAGE_REQUEST)
     }
 
     private fun displayGalleryPhotos(imageList: List<Uri>) {
