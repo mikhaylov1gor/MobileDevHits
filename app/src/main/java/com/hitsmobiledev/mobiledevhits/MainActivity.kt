@@ -1,18 +1,21 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.Manifest
+import android.R.attr.value
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContentView(R.layout.activity_main)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -29,23 +33,25 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val cameraButton: ImageButton = findViewById(R.id.CameraButton)
         val galleryButton: ImageButton = findViewById(R.id.ShowGalleryButton)
 
-        cameraButton.setOnClickListener {
-            Toast.makeText(this, "Кнопка нажата", Toast.LENGTH_SHORT).show()
-        }
-
         galleryButton.setOnClickListener{
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                // Запрашиваем разрешение, если оно не было предоставлено
-                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), permissionCode)
-            } else {
-                loadGalleryPhotos()
-            }
+            loadGalleryPhotos()
         }
     }
 
+     fun openCamera(view: View){
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), permissionCode)
+        }
+
+         val intent: Intent = Intent(
+             this@MainActivity,
+             CameraActivity::class.java
+         )
+
+         this@MainActivity.startActivity(intent)
+    }
     private fun loadGalleryPhotos () {
         val imageList = ArrayList<Uri>()
         val projection = arrayOf(MediaStore.Images.Media._ID)
