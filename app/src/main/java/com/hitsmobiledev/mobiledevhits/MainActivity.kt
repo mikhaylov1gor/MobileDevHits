@@ -88,12 +88,12 @@ class MainActivity : AppCompatActivity() {
         for (imageUri in imageList) {
             val imageButton = ImageButton(this)
 
-            val buttonSize = 1000
+            val buttonSize = 750
             val layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize)
             layoutParams.setMargins(16, 16, 16, 16)
             layoutParams.gravity = Gravity.CENTER
             imageButton.layoutParams = layoutParams
-            imageButton.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
 
             imageButton.setOnClickListener{
                 openToolSelector(imageUri)
