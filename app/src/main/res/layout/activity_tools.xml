@@ -8,22 +8,22 @@
 
     <ImageView
         android:id="@+id/currentPhoto"
-        android:layout_width="413dp"
-        android:layout_height="855dp"
+        android:layout_width="415dp"
+        android:layout_height="800dp"
         android:contentDescription="@string/photo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="0.28"
         tools:srcCompat="@tools:sample/avatars" />
 
     <HorizontalScrollView
         android:id="@+id/toolsScroller"
         android:layout_width="409dp"
         android:layout_height="96dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,65 +38,65 @@
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/rotate"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_rotate"
-                android:contentDescription="@string/rotate" />
+                tools:srcCompat="@drawable/ic_rotate" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/color"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_color_correction"
-                android:contentDescription="@string/color" />
+                tools:srcCompat="@drawable/ic_color_correction" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/scale"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_scale"
-                android:contentDescription="@string/scale" />
+                tools:srcCompat="@drawable/ic_scale" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/face"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_face"
-                android:contentDescription="@string/face" />
+                tools:srcCompat="@drawable/ic_face" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/vector_edit"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_vector_editor"
-                android:contentDescription="@string/vector_edit" />
+                tools:srcCompat="@drawable/ic_vector_editor" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/retouch"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_retouch"
-                android:contentDescription="@string/retouch" />
+                tools:srcCompat="@drawable/ic_retouch" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/blur"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_blur"
-                android:contentDescription="@string/blur" />
+                tools:srcCompat="@drawable/ic_blur" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/affine"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_affine"
-                android:contentDescription="@string/affine" />
+                tools:srcCompat="@drawable/ic_affine" />
 
             <ImageButton
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/dice"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_dice"
-                android:contentDescription="@string/dice" />
+                tools:srcCompat="@drawable/ic_dice" />
 
         </LinearLayout>
     </HorizontalScrollView>
