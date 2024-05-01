@@ -1,33 +1,23 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
-import kotlin.math.sqrt
 
 class RotateActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
     private lateinit var slider: Slider
     private lateinit var button: MaterialButton
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -55,7 +45,6 @@ class RotateActivity : BaseFiltersActivity() {
         return Pair(rotatedX.toInt(), rotatedY.toInt())
     }
 
-
     private fun rotate(angle: Int, image: Bitmap): Bitmap {
         val angleRadians = Math.toRadians(angle.toDouble())
         val inputWidth = image.width
@@ -82,18 +71,15 @@ class RotateActivity : BaseFiltersActivity() {
         val rotatedBitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888)
         val rotatedPixels = IntArray(outputWidth * outputHeight)
 
-        for (y in 0 until inputHeight) {
-            for (x in 0 until inputWidth) {
-                val rotatedPoint = getRotatedCord(Pair(x, y), Pair(imageCenterX, imageCenterY), angleRadians)
-                if (true) {
-                    val originalIndex = y * inputWidth + x
-                    val outputIndex = (rotatedPoint.second - min_Y) * outputWidth + (rotatedPoint.first - min_X)
-                    rotatedPixels[outputIndex] = imagePixels[originalIndex]
+        for (y in 0 until outputHeight) {
+            for (x in 0 until outputWidth) {
+                val rotatedPoint = getRotatedCord(Pair(x + min_X, y + min_Y), Pair(imageCenterX, imageCenterY), angleRadians)
+                if (rotatedPoint.first in 0 until inputWidth && rotatedPoint.second in 0 until inputHeight) {
+                    val color = imagePixels[rotatedPoint.second * inputWidth + rotatedPoint.first]
+                    rotatedPixels[y * outputWidth + x] = color
                 }
             }
         }
-        Toast.makeText(this, "die", Toast.LENGTH_SHORT).show()
-
 
         rotatedBitmap.setPixels(rotatedPixels, 0, outputWidth, 0, 0, outputWidth, outputHeight)
         return rotatedBitmap
