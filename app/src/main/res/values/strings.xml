@@ -11,4 +11,8 @@
     <string name="dice">TODO</string>
     <string name="button_return_back">button_return_back</string>
     <string name="photo" />
+    <string name="button_edit" />
+    <string name="currentPhoto" />
+    <string name="button_save_vector_edit_changes" />
+    <string name="button_back_to_filters" />
 </resources>
