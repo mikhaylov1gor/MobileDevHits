@@ -8,6 +8,7 @@ import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
+import kotlinx.coroutines.*
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -30,12 +31,20 @@ class RotateActivity : BaseFiltersActivity() {
         slider = findViewById(R.id.rotate_slider)
         button = findViewById(R.id.rotate_button)
 
+        val coroutineScope = CoroutineScope(Dispatchers.Main)
+
         button.setOnClickListener {
-            imageView.setImageBitmap(rotate(slider.value.toInt(), MediaStore.Images.Media.getBitmap(this@RotateActivity.contentResolver, imageUri)))
+            coroutineScope.launch {
+                val rotatedImage = rotate(
+                    slider.value.toInt(),
+                    MediaStore.Images.Media.getBitmap(this@RotateActivity.contentResolver, imageUri)
+                )
+                imageView.setImageBitmap(rotatedImage)
+            }
         }
     }
 
-    private fun getRotatedCord(pointCords: Pair<Int,Int>, centerPointCords: Pair<Int,Int>, angle: Double) : Pair<Int, Int> {
+    private fun getRotatedCord(pointCords: Pair<Int, Int>, centerPointCords: Pair<Int, Int>, angle: Double): Pair<Int, Int> {
         val (pointX, pointY) = pointCords
         val (centerX, centerY) = centerPointCords
 
@@ -45,7 +54,7 @@ class RotateActivity : BaseFiltersActivity() {
         return Pair(rotatedX.toInt(), rotatedY.toInt())
     }
 
-    private fun rotate(angle: Int, image: Bitmap): Bitmap {
+    private suspend fun rotate(angle: Int, image: Bitmap): Bitmap = withContext(Dispatchers.Default) {
         val angleRadians = Math.toRadians(angle.toDouble())
         val inputWidth = image.width
         val inputHeight = image.height
@@ -71,17 +80,25 @@ class RotateActivity : BaseFiltersActivity() {
         val rotatedBitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888)
         val rotatedPixels = IntArray(outputWidth * outputHeight)
 
+        val jobs = mutableListOf<Job>()
+
         for (y in 0 until outputHeight) {
-            for (x in 0 until outputWidth) {
-                val rotatedPoint = getRotatedCord(Pair(x + min_X, y + min_Y), Pair(imageCenterX, imageCenterY), angleRadians)
-                if (rotatedPoint.first in 0 until inputWidth && rotatedPoint.second in 0 until inputHeight) {
-                    val color = imagePixels[rotatedPoint.second * inputWidth + rotatedPoint.first]
-                    rotatedPixels[y * outputWidth + x] = color
+            val job = launch {
+                for (x in 0 until outputWidth) {
+                    val rotatedPoint = getRotatedCord(Pair(x + min_X, y + min_Y), Pair(imageCenterX, imageCenterY), angleRadians)
+                    if (rotatedPoint.first in 0 until inputWidth && rotatedPoint.second in 0 until inputHeight) {
+                        val color = imagePixels[rotatedPoint.second * inputWidth + rotatedPoint.first]
+                        rotatedPixels[y * outputWidth + x] = color
+                    }
                 }
             }
+            jobs.add(job)
         }
 
-        rotatedBitmap.setPixels(rotatedPixels, 0, outputWidth, 0, 0, outputWidth, outputHeight)
-        return rotatedBitmap
+        jobs.forEach { it.join() }
+
+        rotatedBitmap.apply {
+            setPixels(rotatedPixels, 0, outputWidth, 0, 0, outputWidth, outputHeight)
+        }
     }
 }
