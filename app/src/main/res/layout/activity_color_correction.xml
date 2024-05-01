@@ -128,4 +128,35 @@
         app:srcCompat="@drawable/corner_up_left"
         android:contentDescription="@string/button_back_to_filters" />
 
+    <SeekBar
+        android:id="@+id/mosaicSeekBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:min="10"
+        android:progress="20"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/filtersScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ColorFilterPhoto"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <SeekBar
+        android:id="@+id/contrastSeekBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:min="0"
+        android:progress="50"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/filtersScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ColorFilterPhoto"
+        app:layout_constraintVertical_bias="1.0" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
