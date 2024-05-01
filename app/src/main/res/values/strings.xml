@@ -11,4 +11,5 @@
     <string name="dice">TODO</string>
     <string name="button_return_back">button_return_back</string>
     <string name="photo" />
+    <string name="rotate_button_text">Rotate!</string>
 </resources>

@@ -1,13 +1,9 @@
 package com.hitsmobiledev.mobiledevhits
 
-import android.Manifest
-import android.R.attr.value
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
@@ -17,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+
 
 
 class MainActivity : AppCompatActivity() {
