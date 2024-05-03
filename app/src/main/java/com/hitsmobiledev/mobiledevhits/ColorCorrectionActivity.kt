@@ -13,6 +13,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import kotlin.math.abs
 import kotlin.math.exp
 
@@ -22,7 +25,8 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
     private lateinit var imageBitmap: Bitmap
     private lateinit var imageUri: Uri
     private lateinit var mosaicSizeSeekBar: SeekBar
-    private lateinit var contrastSizeSeekBar: SeekBar
+    private lateinit var contrastSeekBar: SeekBar
+    private lateinit var gaussSeekBar: SeekBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,29 +39,29 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        var currentBitmap : Bitmap = imageBitmap
+        var currentBitmap: Bitmap = imageBitmap
 
         // button listeners
         val saveChangesButton: ImageButton = findViewById(R.id.button_save_color_changes)
-        saveChangesButton.setOnClickListener{
+        saveChangesButton.setOnClickListener {
             saveChanges(currentBitmap)
         }
 
         val returnToFiltersButton: ImageButton = findViewById(R.id.button_back_to_filters)
-        returnToFiltersButton.setOnClickListener{
+        returnToFiltersButton.setOnClickListener {
             returnToFilters()
         }
-        
+
         // default filter
         val defaultFilterButton: ImageButton = findViewById(R.id.button_standart_filter)
-        defaultFilterButton.setOnClickListener{
+        defaultFilterButton.setOnClickListener {
             hideOtherFilterParameters()
             defaultFilter(imageBitmap)
         }
-        
+
         // negative filter
         val negativeFilterButton: ImageButton = findViewById(R.id.button_first_filter)
-        negativeFilterButton.setOnClickListener{
+        negativeFilterButton.setOnClickListener {
             hideOtherFilterParameters()
             currentBitmap = negativeFilter(imageBitmap)
         }
@@ -65,7 +69,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         // mosaic filter
         val mosaicFilterButton: ImageButton = findViewById(R.id.button_second_filter)
         mosaicSizeSeekBar = findViewById(R.id.mosaicSeekBar)
-        mosaicFilterButton.setOnClickListener{
+        mosaicFilterButton.setOnClickListener {
             hideOtherFilterParameters()
             mosaicSizeSeekBar.visibility = View.VISIBLE
             mosaicFilter(imageBitmap, mosaicSizeSeekBar.progress)
@@ -73,45 +77,52 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
 
         // contrast filter
         val contrastFilterButton: ImageButton = findViewById(R.id.button_third_filter)
-        contrastSizeSeekBar = findViewById(R.id.contrastSeekBar)
-        contrastFilterButton.setOnClickListener{
+        contrastSeekBar = findViewById(R.id.contrastSeekBar)
+        contrastFilterButton.setOnClickListener {
             hideOtherFilterParameters()
-            contrastSizeSeekBar.visibility = View.VISIBLE
-            contrastFilter(imageBitmap, contrastSizeSeekBar.progress)
+            contrastSeekBar.visibility = View.VISIBLE
+            contrastFilter(imageBitmap, contrastSeekBar.progress)
         }
 
         // median filter
         val medianFilterButton: ImageButton = findViewById(R.id.button_fourth_filter)
-        medianFilterButton.setOnClickListener{
+        medianFilterButton.setOnClickListener {
             hideOtherFilterParameters()
             medianFilter(imageBitmap, 7)
         }
 
         // gauss filter
-        val gaussFilterButton : ImageButton = findViewById(R.id.button_fifth_filter)
-        gaussFilterButton.setOnClickListener{
+        val gaussFilterButton: ImageButton = findViewById(R.id.button_fifth_filter)
+        gaussSeekBar = findViewById(R.id.gaussSeekBar)
+        gaussFilterButton.setOnClickListener {
             hideOtherFilterParameters()
-            gaussFilter(imageBitmap, 3.7f, 7)
+            gaussSeekBar.visibility = View.VISIBLE
+            gaussFilter(imageBitmap, gaussSeekBar.progress)
         }
     }
 
-    private fun hideOtherFilterParameters(){
-        mosaicSizeSeekBar.visibility=View.GONE
-        contrastSizeSeekBar.visibility=View.GONE
+    private fun hideOtherFilterParameters() {
+        mosaicSizeSeekBar.visibility = View.GONE
+        contrastSeekBar.visibility = View.GONE
+        gaussSeekBar.visibility = View.GONE
+
     }
-    private fun returnToFilters(){
+
+    private fun returnToFilters() {
         val intent = Intent(this@ColorCorrectionActivity, ChooseFilterActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         this@ColorCorrectionActivity.startActivity(intent)
     }
+
     private fun saveChanges(currentBitmap: Bitmap) {
         returnToFilters()
     }
 
 
-    private fun defaultFilter(imageBitmap: Bitmap){
+    private fun defaultFilter(imageBitmap: Bitmap) {
         imageView.setImageBitmap(imageBitmap)
     }
+
     private fun negativeFilter(imageBitmap: Bitmap): Bitmap {
         val width = imageBitmap.width
         val height = imageBitmap.height
@@ -132,7 +143,88 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         return negativeBitmap
     }
 
-    private fun medianFilter(imageBitmap: Bitmap, windowSize: Int){
+    private fun mosaicFilter(imageBitmap: Bitmap, blockSize: Int) {
+        val width = imageBitmap.width
+        val height = imageBitmap.height
+
+        val pixels = IntArray(width * height)
+
+        imageBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        for (x in 0 until width step blockSize) {
+            for (y in 0 until height step blockSize) {
+                var sumRed = 0
+                var sumGreen = 0
+                var sumBlue = 0
+                var count = 0
+
+                for (i in x until minOf(x + blockSize, width)) {
+                    for (j in y until minOf(y + blockSize, height)) {
+                        val color = pixels[j * width + i]
+
+                        sumRed += Color.red(color)
+                        sumGreen += Color.green(color)
+                        sumBlue += Color.blue(color)
+                        count++
+                    }
+                }
+
+                val blockColor = Color.rgb((sumRed / count), (sumGreen / count), (sumBlue / count))
+
+                for (i in x until minOf(x + blockSize, width)) {
+                    for (j in y until minOf(y + blockSize, height)) {
+                        pixels[j * width + i] = blockColor
+                    }
+                }
+            }
+        }
+
+        val mosaicBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        mosaicBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
+
+        imageView.setImageBitmap(mosaicBitmap)
+    }
+
+
+    private fun trunk(num: Float): Float {
+        return if (num > 255) {
+            255f
+        } else if (num < 0) {
+            0f
+        } else {
+            num
+        }
+    }
+
+    private fun contrastFilter(imageBitmap: Bitmap, contrast: Int) {
+        val factor: Float = (259 * (contrast.toFloat() + 255)) / (255 * (259 - contrast.toFloat()))
+
+        val width = imageBitmap.width
+        val height = imageBitmap.height
+
+        val pixels = IntArray(width * height)
+
+        imageBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        for (i in pixels.indices) {
+            val red = Color.red(pixels[i])
+            val green = Color.green(pixels[i])
+            val blue = Color.blue(pixels[i])
+
+            val newRed = trunk(factor * (red.toFloat() - 128) + 128)
+            val newGreen = trunk(factor * (green - 128) + 128)
+            val newBlue = trunk(factor * (blue - 128) + 128)
+
+            pixels[i] = Color.argb(255, newRed.toInt(), newGreen.toInt(), newBlue.toInt())
+        }
+
+        val contrastBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        contrastBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
+
+        imageView.setImageBitmap(contrastBitmap)
+    }
+
+    private fun medianFilter(imageBitmap: Bitmap, windowSize: Int) {
         val width = imageBitmap.width
         val height = imageBitmap.height
         val pixels = IntArray(width * height)
@@ -169,139 +261,51 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         imageView.setImageBitmap(medianBitmap)
     }
 
-    private fun gaussFilter(imageBitmap: Bitmap, sigma: Float, windowSize: Int) {
+    private fun gaussFilter(imageBitmap: Bitmap, radius:Int) {
         val width = imageBitmap.width
         val height = imageBitmap.height
         val pixels = IntArray(width * height)
 
-        val window = FloatArray(2*windowSize)
+        val sigma = radius.toFloat() / 2
+        val windowSize = radius
+        val window = FloatArray(2 * windowSize)
 
         window[windowSize] = 1.0f
-        for (i in windowSize + 1 until 2*windowSize){
-            window[i] = exp(-i * i / (2*sigma*sigma))
+        for (i in windowSize + 1 until 2 * windowSize) {
+            window[i] = exp(-i * i / (2 * sigma * sigma))
             window[i - windowSize] = window[i]
         }
 
         imageBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
 
-
-        // вертикальное размытие
-        for (x in 0 until width) {
-            for (y in 0 until height) {
+        for (y in 0 until height){
+            for (x in 0 until width){
                 var sum = 0.0f
                 var sumRed = 0.0f
                 var sumGreen = 0.0f
                 var sumBlue = 0.0f
 
-                for (k in -windowSize..windowSize){
-                    val l = k + y
-                    if (l in 0..< height ){
-                        val color = pixels[l*width+x]
-                        sumRed += Color.red(color) * window[abs(k)]
-                        sumGreen += Color.green(color) * window[abs(k)]
-                        sumBlue += Color.blue(color) * window[abs(k)]
-                        sum += window[abs(k)]
+                for (i in -windowSize..windowSize) {
+                    for (j in -windowSize..windowSize) {
+                        val currentX = x + i
+                        val currentY = y + i
+                        if (currentX in 0 until width && currentY in 0 until height) {
+                            val color = pixels[currentY * width + currentX]
+                            sumRed += Color.red(color) * window[abs(j)]
+                            sumGreen += Color.green(color) * window[abs(j)]
+                            sumBlue += Color.blue(color) * window[abs(j)]
+                            sum += window[abs(j)]
+                        }
                     }
                 }
 
-                pixels[y*width+x]=Color.argb(255f,sumRed/sum,sumGreen/sum,sumBlue/sum)
+                pixels[y * width + x] = Color.argb(255, (sumRed / sum).toInt(), (sumGreen / sum).toInt(), (sumBlue / sum).toInt())
             }
         }
-
-
 
         val gaussBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         gaussBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
 
         imageView.setImageBitmap(gaussBitmap)
-    }
-
-    private fun truncFloat(num: Float): Float {
-        return if (num > 255) {
-            255f
-        } else if (num < 0) {
-            0f
-        } else {
-            num
-        }
-    }
-    private fun truncInt(num: Int): Int {
-        return if (num > 255) {
-            255
-        } else if (num < 0) {
-            0
-        } else {
-            num
-        }
-    }
-
-    private fun contrastFilter(imageBitmap: Bitmap, contrast: Int){
-        val factor : Float = (259 * (contrast.toFloat() + 255)) / (255 * (259 - contrast.toFloat()))
-
-        val width = imageBitmap.width
-        val height = imageBitmap.height
-
-        val pixels = IntArray(width * height * 3)
-
-        imageBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-
-        for (i in pixels.indices) {
-            val red = Color.red(pixels[i])
-            val green = Color.green(pixels[i])
-            val blue = Color.blue(pixels[i])
-
-            val newRed = truncFloat(factor * (red.toFloat() - 128) + 128)
-            val newGreen = truncFloat(factor * (green - 128) + 128)
-            val newBlue = truncFloat(factor * (blue - 128) + 128)
-
-            pixels[i] = Color.argb(255f, newRed, newGreen, newBlue)
-        }
-
-        val contrastBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        contrastBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
-
-        imageView.setImageBitmap(contrastBitmap)
-    }
-
-    private fun mosaicFilter(imageBitmap: Bitmap, blockSize: Int){
-        val width = imageBitmap.width
-        val height = imageBitmap.height
-
-        val pixels = IntArray(width * height)
-
-        imageBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-
-        for (x in 0 until width step blockSize) {
-            for (y in 0 until height step blockSize) {
-                var sumRed = 0
-                var sumGreen = 0
-                var sumBlue = 0
-                var count = 0
-
-                for (i in x until minOf(x + blockSize,width)) {
-                    for (j in y until minOf(y + blockSize,height)) {
-                        val color = pixels[j * width + i]
-
-                        sumRed += Color.red(color)
-                        sumGreen += Color.green(color)
-                        sumBlue += Color.blue(color)
-                        count++
-                    }
-                }
-
-                val blockColor = Color.rgb((sumRed/count),(sumGreen/count),(sumBlue/count))
-
-                for (i in x until minOf(x + blockSize,width)) {
-                    for (j in y until minOf(y + blockSize,height)) {
-                        pixels[j * width + i] = blockColor
-                    }
-                }
-            }
-        }
-
-        val mosaicBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        mosaicBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
-
-        imageView.setImageBitmap(mosaicBitmap)
     }
 }
