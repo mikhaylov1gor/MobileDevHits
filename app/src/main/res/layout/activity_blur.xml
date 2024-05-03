@@ -8,16 +8,16 @@
 
     <ImageView
         android:id="@+id/currentPhoto"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
+        android:layout_width="220dp"
+        android:layout_height="354dp"
         android:contentDescription="@string/photo"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389"
+        app:layout_constraintVertical_bias="0.274"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -30,4 +30,99 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/rotate_button"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:text="kk"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentPhoto" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/rotate_slider"
+        android:layout_width="222dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="9dp"
+        android:stepSize="1"
+        android:value="180"
+        android:valueFrom="0"
+        android:valueTo="360"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rotate_button"
+        tools:ignore="MissingConstraints" />
+
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/rotate_slier"
+        android:layout_width="222dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="8dp"
+        android:stepSize="1"
+        android:value="180"
+        android:valueFrom="0"
+
+        android:valueTo="360"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rotate_slider"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/rotate_sier"
+        android:layout_width="222dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="8dp"
+        android:stepSize="1"
+        android:value="180"
+        android:valueFrom="0"
+
+        android:valueTo="360"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rotate_slier"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/rotateSliderLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Rotate Slider"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rotate_slider" />
+
+    <TextView
+        android:id="@+id/rotateSlierLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Rotate Slier"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.481"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rotate_slier" />
+
+    <TextView
+        android:id="@+id/rotateSierLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Rotate Sier"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rotate_sier" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

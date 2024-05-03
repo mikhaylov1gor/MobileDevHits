@@ -1,9 +1,13 @@
 package com.hitsmobiledev.mobiledevhits
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
+import kotlin.math.abs
+import kotlin.math.exp
 
 class RotateActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
@@ -18,4 +22,6 @@ class RotateActivity : BaseFiltersActivity() {
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
     }
+
+
 }
