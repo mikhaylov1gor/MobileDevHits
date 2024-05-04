@@ -1,14 +1,10 @@
 package com.hitsmobiledev.mobiledevhits
 
 import NavigateFragment
-import android.annotation.SuppressLint
 import android.content.Intent
-import android.media.FaceDetector.Face
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -83,7 +79,7 @@ open class BaseFiltersActivity : AppCompatActivity() {
     }
 
     fun chooseScaleFilter(view: View){
-        val intent = Intent(this@BaseFiltersActivity, ScaleActivity::class.java)
+        val intent = Intent(this@BaseFiltersActivity, ScalingActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
         super.onStop()

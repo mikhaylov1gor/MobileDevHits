@@ -11,4 +11,5 @@
     <string name="dice">TODO</string>
     <string name="button_return_back">button_return_back</string>
     <string name="photo" />
+    <string name="scalling_button_name">Масштабировать</string>
 </resources>
