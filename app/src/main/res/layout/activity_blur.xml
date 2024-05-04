@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/rotate_button"
+        android:id="@+id/mask_button"
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
@@ -53,7 +53,7 @@
         android:valueTo="360"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rotate_button"
+        app:layout_constraintTop_toBottomOf="@+id/mask_button"
         tools:ignore="MissingConstraints" />
 
 
