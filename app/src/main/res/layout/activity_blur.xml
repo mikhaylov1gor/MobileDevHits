@@ -43,14 +43,14 @@
         app:layout_constraintTop_toBottomOf="@+id/currentPhoto" />
 
     <com.google.android.material.slider.Slider
-        android:id="@+id/rotate_slider"
+        android:id="@+id/treshold_slider"
         android:layout_width="222dp"
         android:layout_height="49dp"
         android:layout_marginTop="9dp"
         android:stepSize="1"
-        android:value="180"
+        android:value="20"
         android:valueFrom="0"
-        android:valueTo="360"
+        android:valueTo="255"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mask_button"
@@ -58,71 +58,68 @@
 
 
     <com.google.android.material.slider.Slider
-        android:id="@+id/rotate_slier"
+        android:id="@+id/radius_slider"
         android:layout_width="222dp"
         android:layout_height="49dp"
         android:layout_marginTop="8dp"
         android:stepSize="1"
-        android:value="180"
+        android:value="12"
         android:valueFrom="0"
 
-        android:valueTo="360"
+        android:valueTo="80"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rotate_slider"
+        app:layout_constraintTop_toBottomOf="@+id/treshold_slider"
         tools:ignore="MissingConstraints" />
 
     <com.google.android.material.slider.Slider
-        android:id="@+id/rotate_sier"
+        android:id="@+id/amount_slider"
         android:layout_width="222dp"
         android:layout_height="49dp"
         android:layout_marginTop="8dp"
-        android:stepSize="1"
-        android:value="180"
-        android:valueFrom="0"
+        android:stepSize="0.1"
+        android:value="0.4"
+        android:valueFrom="0.0"
 
-        android:valueTo="360"
+        android:valueTo="2.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rotate_slier"
+        app:layout_constraintTop_toBottomOf="@+id/radius_slider"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/rotateSliderLabel"
+        android:id="@+id/treshold_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Rotate Slider"
+        android:text="Threshold"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rotate_slider" />
+        app:layout_constraintTop_toTopOf="@id/treshold_slider" />
 
     <TextView
-        android:id="@+id/rotateSlierLabel"
+        android:id="@+id/radius_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Rotate Slier"
+        android:text="Radius"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rotate_slier" />
+        app:layout_constraintTop_toTopOf="@id/radius_slider" />
 
     <TextView
-        android:id="@+id/rotateSierLabel"
+        android:id="@+id/amount_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Rotate Sier"
+        android:text="Amount"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.475"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rotate_sier" />
+        app:layout_constraintTop_toTopOf="@id/amount_slider" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

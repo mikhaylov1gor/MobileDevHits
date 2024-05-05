@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
+import com.google.android.material.slider.Slider
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.truncate
@@ -15,6 +16,9 @@ import kotlin.math.truncate
 class BlurActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
     private lateinit var maskButton: Button
+    private lateinit var tresholdSlider: Slider
+    private lateinit var radiusSlider: Slider
+    private lateinit var amountSlider: Slider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,19 +30,20 @@ class BlurActivity : BaseFiltersActivity() {
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
 
+        tresholdSlider = findViewById(R.id.treshold_slider)
+        radiusSlider = findViewById(R.id.radius_slider)
+        amountSlider = findViewById(R.id.amount_slider)
+
         maskButton = findViewById(R.id.mask_button)
         maskButton.setOnClickListener() {
             val bitmap =
                 MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
 
-            imageView.setImageBitmap(unshapredMask(bitmap, 2))
+            imageView.setImageBitmap(unsharpenMask(bitmap, amountSlider.value, radiusSlider.value.toInt(), tresholdSlider.value.toInt()))
         }
     }
 
-    private fun gaussFilter(imageBitmap: Bitmap, radius: Int): IntArray {
-        val width = imageBitmap.width
-        val height = imageBitmap.height
-        val pixels = IntArray(width * height)
+    private fun gaussFilter(pixels: IntArray, width: Int, height: Int, radius: Int): IntArray {
         val sigma = radius.toFloat() / 2
         val windowSize = radius
         val window = FloatArray(2 * windowSize + 1)
@@ -49,8 +54,6 @@ class BlurActivity : BaseFiltersActivity() {
             window[windowSize + i] = expVal
             window[windowSize - i] = expVal
         }
-
-        imageBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
 
         val blurredPixels = IntArray(width * height)
 
@@ -84,47 +87,51 @@ class BlurActivity : BaseFiltersActivity() {
         return blurredPixels
     }
 
-    private fun unshapredMask(bitmap: Bitmap, amount: Int): Bitmap {
+    private fun unsharpenMask(bitmap: Bitmap, amount: Float, radius: Int, treshold: Int): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
         val pixels = IntArray(width * height)
-        val outputPixels = IntArray(width * height)
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
 
-        val blurredPixels = gaussFilter(bitmap, 3)
-        val mask = getMask(blurredPixels, pixels)
+        val mask = getMask(gaussFilter(pixels, width, height, radius), pixels, treshold)
+        val outputPixels = IntArray(width * height)
 
         for (i in pixels.indices) {
             val originalColor = pixels[i]
             val maskColor = mask[i]
 
-            val newRed = (Color.red(originalColor) + amount * Color.red(maskColor)).coerceIn(0, 255)
-            val newGreen =
-                (Color.green(originalColor) + amount * Color.green(maskColor)).coerceIn(0, 255)
-            val newBlue =
-                (Color.blue(originalColor) + amount * Color.blue(maskColor)).coerceIn(0, 255)
+            val newAlpha = Color.alpha(originalColor)
+            val newRed = (Color.red(originalColor) + amount * Color.red(maskColor)).toInt().coerceIn(0, 255)
+            val newGreen = (Color.green(originalColor) + amount * Color.green(maskColor)).toInt().coerceIn(0, 255)
+            val newBlue = (Color.blue(originalColor) + amount * Color.blue(maskColor)).toInt().coerceIn(0, 255)
 
-            outputPixels[i] = Color.rgb(newRed, newGreen, newBlue)
+            outputPixels[i] = Color.argb(newAlpha, newRed, newGreen, newBlue)
         }
 
-        val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+        val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         outputBitmap.setPixels(outputPixels, 0, width, 0, 0, width, height)
 
         return outputBitmap
     }
 
-    private fun getMask(blurredPixels: IntArray, originalPixels: IntArray): IntArray {
+    private fun getMask(blurredPixels: IntArray, originalPixels: IntArray, treshold: Int): IntArray {
         val mask = IntArray(originalPixels.size)
 
         for (i in originalPixels.indices) {
             val sharpColor = blurredPixels[i]
             val originalColor = originalPixels[i]
 
-            val newRed = Color.red(originalColor) - Color.red(sharpColor)
-            val newGreen = Color.green(originalColor) - Color.green(sharpColor)
-            val newBlue = Color.blue(originalColor) - Color.blue(sharpColor)
+            val diffAlpha = Color.alpha(originalColor)
+            val diffRed = Color.red(originalColor) - Color.red(sharpColor)
+            val diffGreen = Color.green(originalColor) - Color.green(sharpColor)
+            val diffBlue = Color.blue(originalColor) - Color.blue(sharpColor)
 
-            mask[i] = Color.rgb(newRed, newGreen, newBlue)
+            val newAlpha = diffAlpha
+            val newRed = if (abs(diffRed) > treshold) diffRed else 0
+            val newGreen = if (abs(diffGreen) > treshold) diffGreen else 0
+            val newBlue = if (abs(diffBlue) > treshold) diffBlue else 0
+
+            mask[i] = Color.argb(newAlpha, newRed, newGreen, newBlue)
         }
 
         return mask
