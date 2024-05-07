@@ -25,21 +25,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/retouching"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/currentPhoto"
-        app:layout_constraintVertical_bias="0.0"
         tools:ignore="MissingConstraints">
 
-        <TextView
-            android:id="@+id/brushSizeValue"
-            android:layout_width="40dp"
-            android:layout_height="20dp"
-            android:gravity="center" />
+        <LinearLayout
+            android:id="@+id/brushText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/brushT"
+                android:layout_width="183dp"
+                android:layout_height="match_parent"
+                android:text="Размер кисти" />
+
+            <TextView
+                android:id="@+id/brushSizeValue"
+                android:layout_width="69dp"
+                android:layout_height="20dp"
+                android:gravity="right" />
+        </LinearLayout>
 
         <SeekBar
             android:id="@+id/brushScale"
@@ -51,20 +60,32 @@
         android:id="@+id/retouching"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="76dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/brush"
         tools:ignore="MissingConstraints">
 
-        <TextView
-            android:id="@+id/retouchingValue"
-            android:layout_width="40dp"
-            android:layout_height="20dp"
-            android:gravity="center" />
+        <LinearLayout
+            android:id="@+id/retouchingText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/retouchingT"
+                android:layout_width="183dp"
+                android:layout_height="match_parent"
+                android:text="Коэффициент" />
+
+            <TextView
+                android:id="@+id/retouchingValue"
+                android:layout_width="69dp"
+                android:layout_height="20dp"
+                android:gravity="right" />
+        </LinearLayout>
 
         <SeekBar
             android:id="@+id/retouchingScale"
