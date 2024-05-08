@@ -30,11 +30,11 @@ class Interpolator(points: MutableList<Point>){
 
     init {
         for (i in 0 until size){
-            aCoefs[i] = points[i].x.toFloat()
-            h[i] = points[i+1].x.toFloat() - points[i].x.toFloat()
+            aCoefs[i] = points[i].y.toFloat()
+            h[i] = (points[i+1].x - points[i].x).toFloat()
 
             if (i > 0){
-                cProblemValue[i] = 3 * (aCoefs[i + 1] - aCoefs[i]) / h[i] - 3 * (aCoefs[i] - aCoefs[i - 1]) / h[i - 1];
+                cProblemValue[i] = 3 * (aCoefs[i + 1] - aCoefs[i]) / h[i] - 3 * (aCoefs[i] - aCoefs[i - 1]) / h[i - 1]
             }
         }
 
@@ -163,16 +163,17 @@ class VectorEditActivity : BaseFiltersActivity() {
             style = Paint.Style.FILL
         }
 
+        points.sortBy { it.x }
         val interpolator = Interpolator(points)
         val path = mutableListOf<Point>()
-        for (i in 0 until points.size - 1) {
-            var currentX = points[i].x
+        for (i in 1 until points.size - 1) {
+            var currentX = points[i-1].x
 
-            while (currentX < points[i + 1].x.toFloat()) {
+            while (currentX < points[i].x.toFloat()) {
                 val currentY =
-                    interpolator.aCoefs[i] + interpolator.bCoefs[i] * (currentX - points[i].x) + interpolator.cCoefs[i] * (currentX - points[i].x) * (currentX - points[i].x) + interpolator.dCoefs[i] * (currentX - points[i].x) * (currentX - points[i].x) * (currentX - points[i].x)
+                    interpolator.aCoefs[i-1] + interpolator.bCoefs[i-1] * (currentX - points[i-1].x) + interpolator.cCoefs[i-1] * (currentX - points[i-1].x) * (currentX - points[i-1].x) + interpolator.dCoefs[i-1] * (currentX - points[i-1].x) * (currentX - points[i-1].x) * (currentX - points[i-1].x)
                 path.add(Point(currentX, currentY.toInt()))
-                currentX += 5
+                currentX += 1
             }
         }
 
