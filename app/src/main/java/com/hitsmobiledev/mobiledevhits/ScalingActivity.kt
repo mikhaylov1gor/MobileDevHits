@@ -81,10 +81,12 @@ class ScalingActivity : BaseFiltersActivity() {
         var newPixels = IntArray(newWidth * newHeight)
         val width = imageBitmap.width
         val height = imageBitmap.height
+        val coeffWidth = (newWidth - 1).toFloat() / (width - 1).toFloat()
+        val coeffHeight = (newHeight - 1).toFloat() / (height - 1).toFloat()
         for (x in 0 until newWidth){
             for (y in 0 until newHeight){
-                var coordX : Float = x.toFloat() / (newWidth - 1).toFloat() * (width - 1).toFloat()
-                var coordY : Float = y.toFloat() / (newHeight - 1).toFloat() * (height - 1).toFloat()
+                var coordX : Float = x.toFloat() / coeffWidth
+                var coordY : Float = y.toFloat() / coeffHeight
 
                 var tempX = coordX.toInt().coerceIn(0, width - 2)
                 var tempY = coordY.toInt().coerceIn(0, height - 2)
@@ -99,7 +101,7 @@ class ScalingActivity : BaseFiltersActivity() {
 
                 val firstPixel = prevPixels[tempY * width + tempX]
                 val secondPixel = prevPixels[tempY * width + tempX + 1]
-                val thirdPixel = prevPixels[(tempY * width) + tempX + 1]
+                val thirdPixel = prevPixels[(tempY + 1) * width + tempX + 1]
                 val fourthPixel = prevPixels[(tempY + 1) * width + tempX]
 
                 var red = firstCoeff * Color.red(firstPixel) + secondCoeff * Color.red(secondPixel)
@@ -119,20 +121,24 @@ class ScalingActivity : BaseFiltersActivity() {
         var newPixels = IntArray(newWidth * newHeight)
         val secondWidth = (newWidth.toFloat() * scalingValue).toInt()
         val secondHeight = (newHeight.toFloat() * scalingValue).toInt()
-        var secondLevelPixels =  bilinearFiltering(firstLevelPixels, secondWidth, secondHeight)
+        var secondLevelPixels = bilinearFiltering(firstLevelPixels, secondWidth, secondHeight)
+
+        val firstCoeffWidth = (newWidth - 1).toFloat() / (width - 1).toFloat()
+        val firstCoeffHeight = (newHeight - 1).toFloat() / (height - 1).toFloat()
+        val secondCoeffWidth = (newWidth - 1).toFloat() / (secondWidth - 1).toFloat()
+        val secondCoeffHeight = (newHeight - 1).toFloat() / (secondHeight - 1).toFloat()
 
         for (x in 0 until newWidth) {
             for (y in 0 until newHeight) {
-                val firstX: Float = x.toFloat() / (newWidth - 1).toFloat() * (width - 1).toFloat()
-                val firstY: Float = y.toFloat() / (newHeight - 1).toFloat() * (height - 1).toFloat()
+                val firstX: Float = x.toFloat() / firstCoeffWidth
+                val firstY: Float = y.toFloat() / firstCoeffHeight
 
-                val secondX = x.toFloat() / (newWidth - 1).toFloat() * (secondWidth - 1).toFloat()
-                val secondY = y.toFloat() / (newHeight - 1).toFloat() * (secondHeight - 1).toFloat()
-
+                val secondX = x.toFloat() / secondCoeffWidth
+                val secondY = y.toFloat() / secondCoeffHeight
                 val firstPixel = getInterpolatedColor(firstLevelPixels, firstX, firstY, width, height)
                 val secondPixel = getInterpolatedColor(secondLevelPixels, secondX, secondY, secondWidth, secondHeight)
 
-                val weight = (secondX % 1) * (secondY % 1)
+                val weight = (firstX % 1) * (firstY % 1)
 
                 val red = (Color.red(firstPixel) * (1 - weight) + Color.red(secondPixel) * weight).toInt()
                 val green = (Color.green(firstPixel) * (1 - weight) + Color.green(secondPixel) * weight).toInt()
