@@ -16,49 +16,53 @@ import androidx.activity.enableEdgeToEdge
 
 class Interpolator(points: MutableList<Point>){
 
-    private val size = points.size - 1
-    public val aCoefs : FloatArray = FloatArray(size + 1)
-    public val bCoefs : FloatArray = FloatArray(size)
-    public val cCoefs : FloatArray = FloatArray(size + 1)
-    public val dCoefs : FloatArray = FloatArray(size)
-    private val h : FloatArray = FloatArray(size)
-    private val cProblemValue : FloatArray = FloatArray(size)
+    private val n = points.size - 1
+    public val A : FloatArray = FloatArray(n + 1)
+    public val B : FloatArray = FloatArray(n)
+    public val C : FloatArray = FloatArray(n + 1)
+    public val D : FloatArray = FloatArray(n)
 
-    private val s1 : FloatArray = FloatArray(size+1)
-    private val s2 : FloatArray = FloatArray(size+1)
-    private val s3 : FloatArray = FloatArray(size+1)
+    private val h : FloatArray = FloatArray(n)
+    private val cProblemValue : FloatArray = FloatArray(n)
+
+    private val l : FloatArray = FloatArray(n+1)
+    private val u : FloatArray = FloatArray(n+1)
+    private val z : FloatArray = FloatArray(n+1)
 
     init {
-        for (i in 0 until size){
-            aCoefs[i] = points[i].y.toFloat()
+
+        for (i in 0 until points.size){
+            A[i] = points[i].y.toFloat()
+        }
+
+        for (i in 0 until n){
             h[i] = (points[i+1].x - points[i].x).toFloat()
 
             if (i > 0){
-                cProblemValue[i] = 3 * (aCoefs[i + 1] - aCoefs[i]) / h[i] - 3 * (aCoefs[i] - aCoefs[i - 1]) / h[i - 1]
+                cProblemValue[i] = 3 * (A[i + 1] - A[i]) / h[i] - 3 * (A[i] - A[i - 1]) / h[i - 1];
             }
         }
 
-        s1[0] = 1f
-        s2[0] = 0f
-        s3[0] = 0f
+        l[0] = 1f
+        u[0] = 0f
+        z[0] = 0f
 
-        s1[size] = 1f
-        s2[size] = 0f
-        s3[size] = 0f
-
-        for (i in 1 until size){
-            s1[i] = 2 * (points[i+1].x.toFloat() - points[i-1].x.toFloat()) - h[i-1] * s2[i-1]
-            s2[i] = h[i] / s1[i]
-            s3[i] = (cProblemValue[i] - h[i-1] * s3[i-1]) / s1[i]
+        for (i in 1 until n){
+            l[i] = 2 * (points[i+1].x.toFloat() - points[i-1].x.toFloat()) - h[i-1] * u[i-1]
+            u[i] = h[i] / l[i]
+            z[i] = (cProblemValue[i] - h[i-1] * z[i-1]) / l[i]
         }
 
-        for (i in size - 1 downTo  0){
-            cCoefs[i] = s3[i] - s2[i] * cCoefs[i+1]
-            bCoefs[i] = (aCoefs[i + 1] - aCoefs[i]) / h[i] - h[i] * (cCoefs[i + 1] + 2 * cCoefs[i]) / 3
-            dCoefs[i] = (cCoefs[i + 1] - cCoefs[i]) / (3 * h[i])
+        l[n] = 1f
+        u[n] = 0f
+        z[n] = 0f
+
+        for (i in n - 1 downTo  0){
+            C[i] = z[i] - u[i] * C[i+1]
+            B[i] = (A[i + 1] - A[i]) / h[i] - h[i] * (C[i + 1] + 2 * C[i]) / 3
+            D[i] = (C[i + 1] - C[i]) / (3 * h[i])
         }
     }
-
 }
 
 class VectorEditActivity : BaseFiltersActivity() {
@@ -158,27 +162,44 @@ class VectorEditActivity : BaseFiltersActivity() {
         val editedBitmap = currentBitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(editedBitmap)
 
-        val paintCircle = Paint().apply {
+        val paintLine = Paint().apply {
             color = Color.YELLOW
-            style = Paint.Style.FILL
+            style = Paint.Style.STROKE
+            strokeWidth = 5f
         }
 
-        points.sortBy { it.x }
         val interpolator = Interpolator(points)
         val path = mutableListOf<Point>()
-        for (i in 1 until points.size - 1) {
-            var currentX = points[i-1].x
+        for (i in 0 until points.size - 1) {
+            var currentX = points[i].x
 
-            while (currentX < points[i].x.toFloat()) {
-                val currentY =
-                    interpolator.aCoefs[i-1] + interpolator.bCoefs[i-1] * (currentX - points[i-1].x) + interpolator.cCoefs[i-1] * (currentX - points[i-1].x) * (currentX - points[i-1].x) + interpolator.dCoefs[i-1] * (currentX - points[i-1].x) * (currentX - points[i-1].x) * (currentX - points[i-1].x)
-                path.add(Point(currentX, currentY.toInt()))
-                currentX += 1
+            if (currentX < points[i+1].x) {
+                while (currentX < points[i + 1].x) {
+                    val currentY =
+                        interpolator.A[i] + interpolator.B[i] * (currentX - points[i].x) + interpolator.C[i] * (currentX - points[i].x) * (currentX - points[i].x) + interpolator.D[i] * (currentX - points[i].x) * (currentX - points[i].x) * (currentX - points[i].x)
+                    path.add(Point(currentX, currentY.toInt()))
+                    currentX += 5
+                }
+            }
+
+            if (currentX > points[i+1].x) {
+                while (currentX > points[i + 1].x) {
+                    val currentY =
+                        interpolator.A[i] + interpolator.B[i] * (currentX - points[i].x) + interpolator.C[i] * (currentX - points[i].x) * (currentX - points[i].x) + interpolator.D[i] * (currentX - points[i].x) * (currentX - points[i].x) * (currentX - points[i].x)
+                    path.add(Point(currentX, currentY.toInt()))
+                    currentX -= 5
+                }
             }
         }
 
-        for (i in 0 until path.size) {
-            canvas.drawCircle(path[i].x.toFloat(), path[i].y.toFloat(), 5f, paintCircle)
+        for (i in 1 until path.size) {
+            canvas.drawLine(
+                path[i - 1].x.toFloat(),
+                path[i - 1].y.toFloat(),
+                path[i].x.toFloat(),
+                path[i].y.toFloat(),
+                paintLine
+            )
         }
 
         imageView.setImageBitmap(editedBitmap)
