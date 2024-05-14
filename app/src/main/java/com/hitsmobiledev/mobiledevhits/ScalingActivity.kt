@@ -1,6 +1,7 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import kotlin.math.exp
 
 class ScalingActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
@@ -31,7 +33,7 @@ class ScalingActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        var currentBitmap : Bitmap = imageBitmap
+        var currentBitmap: Bitmap = imageBitmap
         var seekBar = findViewById<SeekBar>(R.id.scalingScale)
         seekBar.max = 4000
         seekBar.min = 500
@@ -54,26 +56,46 @@ class ScalingActivity : BaseFiltersActivity() {
         })
 
         val scalingButton: Button = findViewById<Button>(R.id.scaling)
-        scalingButton.setOnClickListener{
+        scalingButton.setOnClickListener {
             val width = imageBitmap.width
             val height = imageBitmap.height
             val newWidth = (width * scalingValue).toInt()
             val newHeight = (height * scalingValue).toInt()
-            val prevPixels = IntArray(width * height)
-            var newPixels = IntArray(newWidth * newHeight)
-            imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
 
-            if (scalingValue < 1){
-                newPixels = trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
+            if (newWidth * newHeight > 16000000) {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Куда разогнался?")
+                builder.setMessage("Размер полученной фотографии будет слишком большой")
+                builder.setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                builder.show()
+            } else if (newWidth * newHeight < 10) {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Куда разогнался?")
+                builder.setMessage("Размер полученной фотографии будет слишком маленький")
+                builder.setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                builder.show()
             } else {
-                newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
-            }
 
-            val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
-            newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
-            imageBitmap = newBitmap
-            imageView.setImageBitmap(newBitmap)
-            Log.d("myApp", "end")
+                val prevPixels = IntArray(width * height)
+                var newPixels = IntArray(newWidth * newHeight)
+                imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
+
+                if (scalingValue < 1) {
+                    newPixels = trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
+                } else {
+                    newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
+                }
+
+                val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+                newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
+                imageBitmap = newBitmap
+                imageView.setImageBitmap(newBitmap)
+                Log.d("myApp", "end")
+            }
         }
     }
 
@@ -83,10 +105,10 @@ class ScalingActivity : BaseFiltersActivity() {
         val height = imageBitmap.height
         val coeffWidth = (newWidth - 1).toFloat() / (width - 1).toFloat()
         val coeffHeight = (newHeight - 1).toFloat() / (height - 1).toFloat()
-        for (x in 0 until newWidth){
-            for (y in 0 until newHeight){
-                var coordX : Float = x.toFloat() / coeffWidth
-                var coordY : Float = y.toFloat() / coeffHeight
+        for (x in 0 until newWidth) {
+            for (y in 0 until newHeight) {
+                var coordX: Float = x.toFloat() / coeffWidth
+                var coordY: Float = y.toFloat() / coeffHeight
 
                 var tempX = coordX.toInt().coerceIn(0, width - 2)
                 var tempY = coordY.toInt().coerceIn(0, height - 2)
@@ -107,7 +129,8 @@ class ScalingActivity : BaseFiltersActivity() {
                 var red = firstCoeff * Color.red(firstPixel) + secondCoeff * Color.red(secondPixel)
                 red += thirdCoeff * Color.red(thirdPixel) + fourthCoeff * Color.red(fourthPixel)
                 var green = firstCoeff * Color.green(firstPixel) + secondCoeff * Color.green(secondPixel)
-                green += thirdCoeff * Color.green(thirdPixel) + fourthCoeff * Color.green(fourthPixel)
+                green += thirdCoeff * Color.green(thirdPixel) + fourthCoeff * Color.green(fourthPixel
+                )
                 var blue = firstCoeff * Color.blue(firstPixel) + secondCoeff * Color.blue(secondPixel)
                 blue += thirdCoeff * Color.blue(thirdPixel) + fourthCoeff * Color.blue(fourthPixel)
 
@@ -117,14 +140,24 @@ class ScalingActivity : BaseFiltersActivity() {
         return newPixels
     }
 
-    private fun trilinearFiltering(firstLevelPixels: IntArray, width: Int, height: Int, newWidth: Int, newHeight: Int) : IntArray {
+    private fun trilinearFiltering(prevPixels: IntArray, width: Int, height: Int, newWidth: Int, newHeight: Int): IntArray {
         var newPixels = IntArray(newWidth * newHeight)
-        val secondWidth = (newWidth.toFloat() * scalingValue).toInt()
-        val secondHeight = (newHeight.toFloat() * scalingValue).toInt()
-        var secondLevelPixels = bilinearFiltering(firstLevelPixels, secondWidth, secondHeight)
+        var firstWidth = width
+        var firstHeight = height;
+        var firstLevelPixels = prevPixels;
 
-        val firstCoeffWidth = (newWidth - 1).toFloat() / (width - 1).toFloat()
-        val firstCoeffHeight = (newHeight - 1).toFloat() / (height - 1).toFloat()
+        if (width * height < 960 * 720){
+            firstWidth = (width.toFloat() / scalingValue).toInt()
+            firstHeight = (height.toFloat() / scalingValue).toInt()
+            firstLevelPixels = blur(bilinearFiltering(prevPixels, firstWidth, firstHeight), firstWidth, firstHeight)
+        }
+
+        val secondWidth = (width.toFloat() * scalingValue * scalingValue * 3 / 2).toInt()
+        val secondHeight = (height.toFloat() * scalingValue * scalingValue * 3 / 2).toInt()
+        var secondLevelPixels = bilinearFiltering(prevPixels, secondWidth, secondHeight)
+
+        val firstCoeffWidth = (newWidth - 1).toFloat() / (firstWidth - 1).toFloat()
+        val firstCoeffHeight = (newHeight - 1).toFloat() / (firstHeight - 1).toFloat()
         val secondCoeffWidth = (newWidth - 1).toFloat() / (secondWidth - 1).toFloat()
         val secondCoeffHeight = (newHeight - 1).toFloat() / (secondHeight - 1).toFloat()
 
@@ -135,7 +168,8 @@ class ScalingActivity : BaseFiltersActivity() {
 
                 val secondX = x.toFloat() / secondCoeffWidth
                 val secondY = y.toFloat() / secondCoeffHeight
-                val firstPixel = getInterpolatedColor(firstLevelPixels, firstX, firstY, width, height)
+
+                val firstPixel = getInterpolatedColor(firstLevelPixels, firstX, firstY, firstWidth, firstHeight)
                 val secondPixel = getInterpolatedColor(secondLevelPixels, secondX, secondY, secondWidth, secondHeight)
 
                 val weight = (firstX % 1) * (firstY % 1)
@@ -151,7 +185,7 @@ class ScalingActivity : BaseFiltersActivity() {
         return newPixels
     }
 
-    private fun getInterpolatedColor(pixels: IntArray, coordX : Float, coordY : Float, width: Int, height: Int): Int {
+    private fun getInterpolatedColor(pixels: IntArray, coordX: Float, coordY: Float, width: Int, height: Int): Int {
         var tempX = coordX.toInt().coerceIn(0, width - 2)
         var tempY = coordY.toInt().coerceIn(0, height - 2)
 
@@ -165,7 +199,7 @@ class ScalingActivity : BaseFiltersActivity() {
 
         val firstPixel = pixels[tempY * width + tempX]
         val secondPixel = pixels[tempY * width + tempX + 1]
-        val thirdPixel = pixels[(tempY * width) + tempX + 1]
+        val thirdPixel = pixels[(tempY + 1) * width + tempX + 1]
         val fourthPixel = pixels[(tempY + 1) * width + tempX]
 
         var red = firstCoeff * Color.red(firstPixel) + secondCoeff * Color.red(secondPixel)
@@ -177,6 +211,44 @@ class ScalingActivity : BaseFiltersActivity() {
 
         return Color.rgb(red.toInt(), green.toInt(), blue.toInt())
     }
+
+    private fun calculateGaussianWeight(x : Int, sigma : Double) : Double{
+        return (1.0 / (2.0 * Math.PI * sigma * sigma)) * exp(-(x * x) / (2.0 * sigma * sigma));
+    }
+
+    private fun blur(pixels: IntArray, width: Int, height: Int) : IntArray {
+        var newPixels = IntArray(width * height);
+        var radius = 4;
+        var sigma = 1.0 + 960.0 * 720.0 / width.toFloat() / height.toFloat();
+        for (x in 0 until width){
+            for (y in 0 until height){
+                var red = 0.0;
+                var green = 0.0;
+                var blue = 0.0;
+                var weightSum = 0.0;
+                var coord = y * width + x;
+
+                for (i in -radius..radius){
+                    for (j in -radius..radius){
+                        val newX = x + i;
+                        val newY = y + j;
+
+                        if (newX in 0 until width && newY in 0 until height){
+                            var weight = calculateGaussianWeight(i, sigma) * calculateGaussianWeight(j, sigma)
+                            red += Color.red(pixels[coord]).toDouble() * weight;
+                            green += Color.green(pixels[coord]).toDouble() * weight;
+                            blue += Color.blue(pixels[coord]).toDouble() * weight;
+                            weightSum += weight;
+                        }
+                    }
+                }
+                red /= weightSum;
+                green /= weightSum;
+                blue /= weightSum;
+
+                newPixels[coord] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+            }
+        }
+        return newPixels;
+    }
 }
-
-
