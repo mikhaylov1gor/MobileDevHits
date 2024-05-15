@@ -116,6 +116,7 @@ class RetouchActivity : BaseFiltersActivity() {
 
             var x = event.x
             var y = event.y
+
             if (topBorder <= y && y <= bottomBorder && leftBorder <= x && x <= rightBorder){
                 x -= leftBorder
                 y -= topBorder
