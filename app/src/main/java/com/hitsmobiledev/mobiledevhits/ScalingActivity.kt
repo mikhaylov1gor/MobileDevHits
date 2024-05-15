@@ -2,17 +2,27 @@ package com.hitsmobiledev.mobiledevhits
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 import kotlin.math.exp
 
 class ScalingActivity : BaseFiltersActivity() {
@@ -95,8 +105,37 @@ class ScalingActivity : BaseFiltersActivity() {
                 imageBitmap = newBitmap
                 imageView.setImageBitmap(newBitmap)
                 Log.d("myApp", "end")
+
+                saveImageToGallery(newBitmap)
             }
         }
+    }
+
+    private fun saveImageToGallery(bitmap: Bitmap) {
+        val filename = "${System.currentTimeMillis()}.jpg"
+        val fos: OutputStream?
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val resolver = contentResolver
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+            }
+            val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            fos = imageUri?.let { resolver.openOutputStream(it) }
+        } else {
+            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val image = File(imagesDir, filename)
+            fos = FileOutputStream(image)
+        }
+
+        fos.use {
+            if (it != null) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+            }
+        }
+
+        Toast.makeText(this, "Изображение сохранено", Toast.LENGTH_SHORT).show()
     }
 
     private fun bilinearFiltering(prevPixels: IntArray, newWidth: Int, newHeight: Int): IntArray {
