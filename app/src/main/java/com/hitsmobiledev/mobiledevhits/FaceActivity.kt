@@ -4,6 +4,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 class FaceActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
