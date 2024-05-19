@@ -25,9 +25,9 @@ class Interpolator(points: MutableList<Point>){
     private val h : FloatArray = FloatArray(n)
     private val cProblemValue : FloatArray = FloatArray(n)
 
-    private val l : FloatArray = FloatArray(n+1)
-    private val u : FloatArray = FloatArray(n+1)
-    private val z : FloatArray = FloatArray(n+1)
+    private val s1 : FloatArray = FloatArray(n+1)
+    private val s2 : FloatArray = FloatArray(n+1)
+    private val s3 : FloatArray = FloatArray(n+1)
 
     init {
 
@@ -43,22 +43,22 @@ class Interpolator(points: MutableList<Point>){
             }
         }
 
-        l[0] = 1f
-        u[0] = 0f
-        z[0] = 0f
+        s1[0] = 1f
+        s2[0] = 0f
+        s3[0] = 0f
 
         for (i in 1 until n){
-            l[i] = 2 * (points[i+1].x.toFloat() - points[i-1].x.toFloat()) - h[i-1] * u[i-1]
-            u[i] = h[i] / l[i]
-            z[i] = (cProblemValue[i] - h[i-1] * z[i-1]) / l[i]
+            s1[i] = 2 * (points[i+1].x.toFloat() - points[i-1].x.toFloat()) - h[i-1] * s2[i-1]
+            s2[i] = h[i] / s1[i]
+            s3[i] = (cProblemValue[i] - h[i-1] * s3[i-1]) / s1[i]
         }
 
-        l[n] = 1f
-        u[n] = 0f
-        z[n] = 0f
+        s1[n] = 1f
+        s2[n] = 0f
+        s3[n] = 0f
 
         for (i in n - 1 downTo  0){
-            C[i] = z[i] - u[i] * C[i+1]
+            C[i] = s3[i] - s2[i] * C[i+1]
             B[i] = (A[i + 1] - A[i]) / h[i] - h[i] * (C[i + 1] + 2 * C[i]) / 3
             D[i] = (C[i + 1] - C[i]) / (3 * h[i])
         }
