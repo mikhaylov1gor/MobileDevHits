@@ -8,14 +8,18 @@
 
     <ImageButton
         android:id="@+id/button_return"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="32dp"
         android:onClick="returnBack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/corner_up_left" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/arrow_left" />
 
     <HorizontalScrollView
         android:id="@+id/toolsScroller"
@@ -34,10 +38,8 @@
 
             <ImageButton
                 android:id="@+id/rotate"
-                style="@android:style/Widget.ImageButton"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="#00FF0000"
                 android:contentDescription="@string/rotate"
                 android:onClick="chooseRotateFilter"
                 android:scaleType="fitCenter"
@@ -49,7 +51,6 @@
                 android:id="@+id/color"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="#00FF0000"
                 android:contentDescription="@string/color"
                 android:onClick="chooseColorFilter"
                 android:scaleType="fitCenter"
@@ -61,7 +62,6 @@
                 android:id="@+id/scale"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="#00FF0000"
                 android:contentDescription="@string/scale"
                 android:onClick="chooseScaleFilter"
                 android:scaleType="fitCenter"
@@ -73,7 +73,6 @@
                 android:id="@+id/face"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="#00FF0000"
                 android:contentDescription="@string/face"
                 android:onClick="chooseFaceFilter"
                 android:scaleType="fitCenter"
@@ -85,7 +84,6 @@
                 android:id="@+id/vector_edit"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="#00FF0000"
                 android:contentDescription="@string/vector_edit"
                 android:onClick="chooseVectorEditFilter"
                 android:scaleType="fitCenter"
@@ -96,7 +94,6 @@
                 android:id="@+id/retouch"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/retouch"
                 android:onClick="chooseRetouchFilter"
                 android:scaleType="fitCenter"
@@ -107,7 +104,6 @@
                 android:id="@+id/blur"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/blur"
                 android:onClick="chooseBlurFilter"
                 android:scaleType="fitCenter"
@@ -118,7 +114,6 @@
                 android:id="@+id/affine"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/affine"
                 android:onClick="chooseAffineFilter"
                 android:scaleType="fitCenter"
@@ -129,7 +124,6 @@
                 android:id="@+id/dice"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:backgroundTint="#00FF0000"
                 android:contentDescription="@string/dice"
                 android:onClick="chooseDiceFilter"
                 android:scaleType="fitCenter"
@@ -140,4 +134,3 @@
     </HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
