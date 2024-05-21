@@ -9,6 +9,12 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.slider.Slider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.truncate
@@ -39,11 +45,16 @@ class BlurActivity : BaseFiltersActivity() {
             val bitmap =
                 MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
 
-            imageView.setImageBitmap(unsharpenMask(bitmap, amountSlider.value, radiusSlider.value.toInt(), tresholdSlider.value.toInt()))
+
+            CoroutineScope(Dispatchers.Main).launch {
+
+                val masked = unsharpenMask(bitmap, amountSlider.value, radiusSlider.value.toInt(), tresholdSlider.value.toInt())
+                imageView.setImageBitmap(masked)
+            }
         }
     }
 
-    private fun gaussFilter(pixels: IntArray, width: Int, height: Int, radius: Int): IntArray {
+    private suspend fun gaussFilter(pixels: IntArray, width: Int, height: Int, radius: Int): IntArray = coroutineScope {
         val sigma = radius.toFloat() / 2
         val windowSize = radius
         val window = FloatArray(2 * windowSize + 1)
@@ -56,38 +67,43 @@ class BlurActivity : BaseFiltersActivity() {
         }
 
         val blurredPixels = IntArray(width * height)
+        val jobs = mutableListOf<Job>()
 
         for (y in 0 until height) {
-            for (x in 0 until width) {
-                var sumRed = 0.0f
-                var sumGreen = 0.0f
-                var sumBlue = 0.0f
-                var sumWeight = 0.0f
+            val job = launch(Dispatchers.Default) {
+                for (x in 0 until width) {
+                    var sumRed = 0.0f
+                    var sumGreen = 0.0f
+                    var sumBlue = 0.0f
+                    var sumWeight = 0.0f
 
-                for (i in -windowSize..windowSize) {
-                    val currentX = x + i
-                    if (currentX in 0 until width) {
-                        val color = pixels[y * width + currentX]
-                        val weight = window[windowSize + i]
-                        sumRed += Color.red(color) * weight
-                        sumGreen += Color.green(color) * weight
-                        sumBlue += Color.blue(color) * weight
-                        sumWeight += weight
+                    for (i in -windowSize..windowSize) {
+                        val currentX = x + i
+                        if (currentX in 0 until width) {
+                            val color = pixels[y * width + currentX]
+                            val weight = window[windowSize + i]
+                            sumRed += Color.red(color) * weight
+                            sumGreen += Color.green(color) * weight
+                            sumBlue += Color.blue(color) * weight
+                            sumWeight += weight
+                        }
                     }
+
+                    val newRed = (sumRed / sumWeight).toInt().coerceIn(0, 255)
+                    val newGreen = (sumGreen / sumWeight).toInt().coerceIn(0, 255)
+                    val newBlue = (sumBlue / sumWeight).toInt().coerceIn(0, 255)
+
+                    blurredPixels[y * width + x] = Color.rgb(newRed, newGreen, newBlue)
                 }
-
-                val newRed = (sumRed / sumWeight).toInt().coerceIn(0, 255)
-                val newGreen = (sumGreen / sumWeight).toInt().coerceIn(0, 255)
-                val newBlue = (sumBlue / sumWeight).toInt().coerceIn(0, 255)
-
-                blurredPixels[y * width + x] = Color.rgb(newRed, newGreen, newBlue)
             }
+            jobs.add(job)
         }
 
-        return blurredPixels
+        jobs.joinAll()
+        return@coroutineScope blurredPixels
     }
 
-    private fun unsharpenMask(bitmap: Bitmap, amount: Float, radius: Int, treshold: Int): Bitmap {
+    suspend fun unsharpenMask(bitmap: Bitmap, amount: Float, radius: Int, treshold: Int): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
         val pixels = IntArray(width * height)
