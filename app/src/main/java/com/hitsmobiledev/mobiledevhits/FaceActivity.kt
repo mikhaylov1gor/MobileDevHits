@@ -85,7 +85,7 @@ class FaceActivity : BaseFiltersActivity() {
                             (rect.x + rect.width).toDouble(),
                             (rect.y + rect.height).toDouble()
                         ),
-                        Scalar(255.0, 0.0, 0.0),
+                        Scalar(0.0, 255.0, 0.0, 255.0),
                         3
                     )
                 }
