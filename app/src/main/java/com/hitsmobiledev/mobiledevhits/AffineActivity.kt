@@ -58,11 +58,6 @@ class AffineActivity : BaseFiltersActivity() {
         var currentBitmap: Bitmap = imageBitmap
         calculateBorders()
 
-        val saveChangesButton: ImageButton = findViewById(R.id.button_save_affine_changes)
-        saveChangesButton.setOnClickListener {
-            saveChanges(currentBitmap)
-        }
-
         val returnToFiltersButton: ImageButton = findViewById(R.id.button_back_to_filters)
         returnToFiltersButton.setOnClickListener {
             returnToFilters()
@@ -165,33 +160,6 @@ class AffineActivity : BaseFiltersActivity() {
             leftBorder = imageView.left
             rightBorder = imageView.right
         }
-    }
-
-    private fun saveChanges(currentBitmap: Bitmap) {
-        val filename = "${System.currentTimeMillis()}.jpg"
-        val fos: OutputStream?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = contentResolver
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-            }
-            val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            fos = imageUri?.let { resolver.openOutputStream(it) }
-        } else {
-            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val image = File(imagesDir, filename)
-            fos = FileOutputStream(image)
-        }
-
-        fos.use {
-            if (it != null) {
-                currentBitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
-            }
-        }
-
-        Toast.makeText(this, "Изображение сохранено", Toast.LENGTH_SHORT).show()
     }
 
     private fun setStartPoints(currentBitmap: Bitmap) {

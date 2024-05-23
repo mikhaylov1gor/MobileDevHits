@@ -41,7 +41,7 @@
                 android:id="@+id/brushT"
                 android:layout_width="183dp"
                 android:layout_height="match_parent"
-                android:text="Размер кисти" />
+                android:text="@string/brush_size" />
 
             <TextView
                 android:id="@+id/brushSizeValue"
@@ -78,7 +78,7 @@
                 android:id="@+id/retouchingT"
                 android:layout_width="183dp"
                 android:layout_height="match_parent"
-                android:text="Коэффициент" />
+                android:text="@string/coefficient" />
 
             <TextView
                 android:id="@+id/retouchingValue"

@@ -53,11 +53,9 @@ class RetouchActivity : BaseFiltersActivity() {
                 brushSizeValueView.text = "$brushSize"
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
         var retouchingSeekBar = findViewById<SeekBar>(R.id.retouchingScale)
@@ -72,13 +70,10 @@ class RetouchActivity : BaseFiltersActivity() {
                 retouchingValueView.text = "$coefficient"
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-
     }
 
     private fun calculateBorders(){

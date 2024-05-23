@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ImageView
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
@@ -16,8 +18,8 @@ import kotlin.math.sin
 
 class RotateActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
-    private lateinit var slider: Slider
     private lateinit var button: MaterialButton
+    private var angleRotation: Int = 180
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +30,22 @@ class RotateActivity : BaseFiltersActivity() {
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
 
-        slider = findViewById(R.id.rotate_slider)
+        var angleSeekBar = findViewById<SeekBar>(R.id.brushAngle)
+        angleSeekBar.max = 360
+        angleSeekBar.min = 0
+        angleSeekBar.progress = 180
+        val retouchingValueView = findViewById<TextView>(R.id.angleValue)
+        retouchingValueView.text = "$angleRotation"
+        angleSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                angleRotation = progress
+                retouchingValueView.text = "$angleRotation"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
         button = findViewById(R.id.rotate_button)
 
         val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -36,7 +53,7 @@ class RotateActivity : BaseFiltersActivity() {
         button.setOnClickListener {
             coroutineScope.launch {
                 val rotatedImage = rotate(
-                    slider.value.toInt(),
+                    angleRotation,
                     MediaStore.Images.Media.getBitmap(this@RotateActivity.contentResolver, imageUri)
                 )
                 imageView.setImageBitmap(rotatedImage)
