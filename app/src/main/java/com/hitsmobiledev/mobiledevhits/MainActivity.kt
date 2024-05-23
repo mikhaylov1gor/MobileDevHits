@@ -1,11 +1,11 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.Manifest
-import android.R.attr.value
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Gravity
@@ -14,14 +14,16 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-
 class MainActivity : AppCompatActivity() {
 
-    private val permissionCode = 123
+    private lateinit var pickImagesLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,48 +38,53 @@ class MainActivity : AppCompatActivity() {
         }
 
         val galleryButton: ImageButton = findViewById(R.id.ShowGalleryButton)
-
-        galleryButton.setOnClickListener{
+        galleryButton.setOnClickListener {
             loadGalleryPhotos()
+        }
+
+        pickImagesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                val selectedImages = mutableListOf<Uri>()
+                val data = result.data
+                if (data?.clipData != null) {
+                    val clipData = data.clipData
+                    for (i in 0 until clipData!!.itemCount) {
+                        val uri = clipData.getItemAt(i).uri
+                        selectedImages.add(uri)
+                    }
+                } else if (data?.data != null) {
+                    val uri = data.data!!
+                    selectedImages.add(uri)
+                }
+                displayGalleryPhotos(selectedImages)
+            }
         }
     }
 
-     fun openCamera(view: View) {
-         val intent: Intent = Intent(this@MainActivity, CameraActivity::class.java)
-         this@MainActivity.startActivity(intent)
-     }
+    fun openCamera(view: View) {
+        val intent = Intent(this@MainActivity, CameraActivity::class.java)
+        this@MainActivity.startActivity(intent)
+    }
 
-    private fun openToolSelector(image: Uri){
-        val intent: Intent = Intent(this@MainActivity, ChooseFilterActivity::class.java)
+    private fun openToolSelector(image: Uri) {
+        val intent = Intent(this@MainActivity, ChooseFilterActivity::class.java)
         intent.putExtra("currentPhoto", image)
         this@MainActivity.startActivity(intent)
     }
 
-    private val PICK_IMAGE_REQUEST = 1
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            val selectedImages = mutableListOf<Uri>()
-            if (data.clipData != null) {
-                val clipData = data.clipData
-                for (i in 0 until clipData!!.itemCount) {
-                    val uri = clipData.getItemAt(i).uri
-                    selectedImages.add(uri)
-                }
-            } else if (data.data != null) {
-                val uri = data.data!!
-                selectedImages.add(uri)
-            }
-
-            displayGalleryPhotos(selectedImages)
-        }
-    }
     private fun loadGalleryPhotos() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-        intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        val intent = if (Build.VERSION.SDK_INT >= 33) {
+            Intent(MediaStore.ACTION_PICK_IMAGES).apply {
+                type = "image/*"
+                putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, 10)  // or any other number for maximum images
+            }
+        } else {
+            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                type = "image/*"
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
+        }
+        pickImagesLauncher.launch(intent)
     }
 
     private fun displayGalleryPhotos(imageList: List<Uri>) {
@@ -94,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             imageButton.layoutParams = layoutParams
             imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
 
-            imageButton.setOnClickListener{
+            imageButton.setOnClickListener {
                 openToolSelector(imageUri)
             }
 
