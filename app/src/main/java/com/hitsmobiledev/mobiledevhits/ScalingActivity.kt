@@ -2,27 +2,17 @@ package com.hitsmobiledev.mobiledevhits
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.ContentValues
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
+import kotlinx.coroutines.*
 import kotlin.math.exp
 
 class ScalingActivity : BaseFiltersActivity() {
@@ -43,7 +33,7 @@ class ScalingActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        var currentBitmap: Bitmap = imageBitmap
+        val coroutineScope = CoroutineScope(Dispatchers.Main)
         var seekBar = findViewById<SeekBar>(R.id.scalingScale)
         seekBar.max = 4000
         seekBar.min = 500
@@ -89,97 +79,72 @@ class ScalingActivity : BaseFiltersActivity() {
                 }
                 builder.show()
             } else {
+                coroutineScope.launch {
+                    val prevPixels = IntArray(width * height)
+                    var newPixels = IntArray(newWidth * newHeight)
+                    imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
+                    if (scalingValue < 1) {
+                        newPixels = trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
+                    } else {
+                        newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
+                    }
 
-                val prevPixels = IntArray(width * height)
-                var newPixels = IntArray(newWidth * newHeight)
-                imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
-
-                if (scalingValue < 1) {
-                    newPixels = trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
-                } else {
-                    newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
+                    val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+                    newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
+                    imageBitmap = newBitmap
+                    imageView.setImageBitmap(newBitmap)
                 }
-
-                val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
-                newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
-                imageBitmap = newBitmap
-                imageView.setImageBitmap(newBitmap)
-                Log.d("myApp", "end")
-
-                saveImageToGallery(newBitmap)
             }
         }
     }
 
-    private fun saveImageToGallery(bitmap: Bitmap) {
-        val filename = "${System.currentTimeMillis()}.jpg"
-        val fos: OutputStream?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = contentResolver
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-            }
-            val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            fos = imageUri?.let { resolver.openOutputStream(it) }
-        } else {
-            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val image = File(imagesDir, filename)
-            fos = FileOutputStream(image)
-        }
 
-        fos.use {
-            if (it != null) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
-            }
-        }
-
-        Toast.makeText(this, "Изображение сохранено", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun bilinearFiltering(prevPixels: IntArray, newWidth: Int, newHeight: Int): IntArray {
+    private suspend fun bilinearFiltering(prevPixels: IntArray, newWidth: Int, newHeight: Int): IntArray = withContext(Dispatchers.Default) {
         var newPixels = IntArray(newWidth * newHeight)
         val width = imageBitmap.width
         val height = imageBitmap.height
         val coeffWidth = (newWidth - 1).toFloat() / (width - 1).toFloat()
         val coeffHeight = (newHeight - 1).toFloat() / (height - 1).toFloat()
+        val jobs = mutableListOf<Job>()
         for (x in 0 until newWidth) {
-            for (y in 0 until newHeight) {
-                var coordX: Float = x.toFloat() / coeffWidth
-                var coordY: Float = y.toFloat() / coeffHeight
+            val job = launch {
+                for (y in 0 until newHeight) {
+                    var coordX: Float = x.toFloat() / coeffWidth
+                    var coordY: Float = y.toFloat() / coeffHeight
 
-                var tempX = coordX.toInt().coerceIn(0, width - 2)
-                var tempY = coordY.toInt().coerceIn(0, height - 2)
+                    var tempX = coordX.toInt().coerceIn(0, width - 2)
+                    var tempY = coordY.toInt().coerceIn(0, height - 2)
 
-                coordX -= tempX
-                coordY -= tempY
+                    coordX -= tempX
+                    coordY -= tempY
 
-                val firstCoeff = (1 - coordX) * (1 - coordY)
-                val secondCoeff = coordX * (1 - coordY)
-                val thirdCoeff = coordX * coordY
-                val fourthCoeff = (1 - coordX) * coordY
+                    val firstCoeff = (1 - coordX) * (1 - coordY)
+                    val secondCoeff = coordX * (1 - coordY)
+                    val thirdCoeff = coordX * coordY
+                    val fourthCoeff = (1 - coordX) * coordY
 
-                val firstPixel = prevPixels[tempY * width + tempX]
-                val secondPixel = prevPixels[tempY * width + tempX + 1]
-                val thirdPixel = prevPixels[(tempY + 1) * width + tempX + 1]
-                val fourthPixel = prevPixels[(tempY + 1) * width + tempX]
+                    val firstPixel = prevPixels[tempY * width + tempX]
+                    val secondPixel = prevPixels[tempY * width + tempX + 1]
+                    val thirdPixel = prevPixels[(tempY + 1) * width + tempX + 1]
+                    val fourthPixel = prevPixels[(tempY + 1) * width + tempX]
 
-                var red = firstCoeff * Color.red(firstPixel) + secondCoeff * Color.red(secondPixel)
-                red += thirdCoeff * Color.red(thirdPixel) + fourthCoeff * Color.red(fourthPixel)
-                var green = firstCoeff * Color.green(firstPixel) + secondCoeff * Color.green(secondPixel)
-                green += thirdCoeff * Color.green(thirdPixel) + fourthCoeff * Color.green(fourthPixel
-                )
-                var blue = firstCoeff * Color.blue(firstPixel) + secondCoeff * Color.blue(secondPixel)
-                blue += thirdCoeff * Color.blue(thirdPixel) + fourthCoeff * Color.blue(fourthPixel)
+                    var red = firstCoeff * Color.red(firstPixel) + secondCoeff * Color.red(secondPixel)
+                    red += thirdCoeff * Color.red(thirdPixel) + fourthCoeff * Color.red(fourthPixel)
+                    var green = firstCoeff * Color.green(firstPixel) + secondCoeff * Color.green(secondPixel)
+                    green += thirdCoeff * Color.green(thirdPixel) + fourthCoeff * Color.green(fourthPixel)
+                    var blue = firstCoeff * Color.blue(firstPixel) + secondCoeff * Color.blue(secondPixel)
+                    blue += thirdCoeff * Color.blue(thirdPixel) + fourthCoeff * Color.blue(fourthPixel)
 
-                newPixels[y * newWidth + x] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+                    newPixels[y * newWidth + x] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+                }
             }
+            jobs.add(job)
         }
-        return newPixels
+        jobs.forEach { it.join() }
+        return@withContext newPixels
     }
 
-    private fun trilinearFiltering(prevPixels: IntArray, width: Int, height: Int, newWidth: Int, newHeight: Int): IntArray {
+    private suspend fun trilinearFiltering(prevPixels: IntArray, width: Int, height: Int, newWidth: Int, newHeight: Int): IntArray = withContext(Dispatchers.Default) {
         var newPixels = IntArray(newWidth * newHeight)
         var firstWidth = width
         var firstHeight = height;
@@ -200,28 +165,44 @@ class ScalingActivity : BaseFiltersActivity() {
         val secondCoeffWidth = (newWidth - 1).toFloat() / (secondWidth - 1).toFloat()
         val secondCoeffHeight = (newHeight - 1).toFloat() / (secondHeight - 1).toFloat()
 
+        val jobs = mutableListOf<Job>()
         for (x in 0 until newWidth) {
-            for (y in 0 until newHeight) {
-                val firstX: Float = x.toFloat() / firstCoeffWidth
-                val firstY: Float = y.toFloat() / firstCoeffHeight
+            val job = launch {
+                for (y in 0 until newHeight) {
+                    val firstX: Float = x.toFloat() / firstCoeffWidth
+                    val firstY: Float = y.toFloat() / firstCoeffHeight
 
-                val secondX = x.toFloat() / secondCoeffWidth
-                val secondY = y.toFloat() / secondCoeffHeight
+                    val secondX = x.toFloat() / secondCoeffWidth
+                    val secondY = y.toFloat() / secondCoeffHeight
 
-                val firstPixel = getInterpolatedColor(firstLevelPixels, firstX, firstY, firstWidth, firstHeight)
-                val secondPixel = getInterpolatedColor(secondLevelPixels, secondX, secondY, secondWidth, secondHeight)
+                    val firstPixel = getInterpolatedColor(
+                        firstLevelPixels,
+                        firstX,
+                        firstY,
+                        firstWidth,
+                        firstHeight
+                    )
+                    val secondPixel = getInterpolatedColor(
+                        secondLevelPixels,
+                        secondX,
+                        secondY,
+                        secondWidth,
+                        secondHeight
+                    )
 
-                val weight = (firstX % 1) * (firstY % 1)
+                    val weight = (firstX % 1) * (firstY % 1)
 
-                val red = (Color.red(firstPixel) * (1 - weight) + Color.red(secondPixel) * weight).toInt()
-                val green = (Color.green(firstPixel) * (1 - weight) + Color.green(secondPixel) * weight).toInt()
-                val blue = (Color.blue(firstPixel) * (1 - weight) + Color.blue(secondPixel) * weight).toInt()
+                    val red = (Color.red(firstPixel) * (1 - weight) + Color.red(secondPixel) * weight).toInt()
+                    val green = (Color.green(firstPixel) * (1 - weight) + Color.green(secondPixel) * weight).toInt()
+                    val blue = (Color.blue(firstPixel) * (1 - weight) + Color.blue(secondPixel) * weight).toInt()
 
-                newPixels[y * newWidth + x] = Color.rgb(red, green, blue)
+                    newPixels[y * newWidth + x] = Color.rgb(red, green, blue)
+                }
             }
+            jobs.add(job)
         }
-
-        return newPixels
+        jobs.forEach { it.join() }
+        return@withContext newPixels
     }
 
     private fun getInterpolatedColor(pixels: IntArray, coordX: Float, coordY: Float, width: Int, height: Int): Int {
@@ -255,39 +236,48 @@ class ScalingActivity : BaseFiltersActivity() {
         return (1.0 / (2.0 * Math.PI * sigma * sigma)) * exp(-(x * x) / (2.0 * sigma * sigma));
     }
 
-    private fun blur(pixels: IntArray, width: Int, height: Int) : IntArray {
+    private suspend fun blur(pixels: IntArray, width: Int, height: Int) : IntArray = withContext(Dispatchers.Default) {
         var newPixels = IntArray(width * height);
         var radius = 4;
         var sigma = 1.0 + 960.0 * 720.0 / width.toFloat() / height.toFloat();
+        val jobs = mutableListOf<Job>()
         for (x in 0 until width){
-            for (y in 0 until height){
-                var red = 0.0;
-                var green = 0.0;
-                var blue = 0.0;
-                var weightSum = 0.0;
-                var coord = y * width + x;
+            val job = launch {
+                for (y in 0 until height) {
+                    var red = 0.0;
+                    var green = 0.0;
+                    var blue = 0.0;
+                    var weightSum = 0.0;
+                    var coord = y * width + x;
 
-                for (i in -radius..radius){
-                    for (j in -radius..radius){
-                        val newX = x + i;
-                        val newY = y + j;
+                    for (i in -radius..radius) {
+                        for (j in -radius..radius) {
+                            val newX = x + i;
+                            val newY = y + j;
 
-                        if (newX in 0 until width && newY in 0 until height){
-                            var weight = calculateGaussianWeight(i, sigma) * calculateGaussianWeight(j, sigma)
-                            red += Color.red(pixels[coord]).toDouble() * weight;
-                            green += Color.green(pixels[coord]).toDouble() * weight;
-                            blue += Color.blue(pixels[coord]).toDouble() * weight;
-                            weightSum += weight;
+                            if (newX in 0 until width && newY in 0 until height) {
+                                var weight =
+                                    calculateGaussianWeight(i, sigma) * calculateGaussianWeight(
+                                        j,
+                                        sigma
+                                    )
+                                red += Color.red(pixels[coord]).toDouble() * weight;
+                                green += Color.green(pixels[coord]).toDouble() * weight;
+                                blue += Color.blue(pixels[coord]).toDouble() * weight;
+                                weightSum += weight;
+                            }
                         }
                     }
-                }
-                red /= weightSum;
-                green /= weightSum;
-                blue /= weightSum;
+                    red /= weightSum;
+                    green /= weightSum;
+                    blue /= weightSum;
 
-                newPixels[coord] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+                    newPixels[coord] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+                }
             }
+            jobs.add(job)
         }
-        return newPixels;
+        jobs.forEach { it.join() }
+        return@withContext newPixels;
     }
 }
