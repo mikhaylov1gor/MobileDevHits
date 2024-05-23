@@ -1,7 +1,13 @@
 package com.hitsmobiledev.mobiledevhits
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import NavigateFragment
 import android.content.Intent
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -11,12 +17,14 @@ import com.hitsmobiledev.mobiledevhits.cube.CubeActivity
 
 open class BaseFiltersActivity : AppCompatActivity() {
     private lateinit var imageUri: Uri
+    private lateinit var filterViewModel: filterViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigate)
 
-        imageUri = intent.getParcelableExtra("currentPhoto")!!
+        filterViewModel = ViewModelProvider(this).get(filterViewModel::class.java)
+
 
         supportFragmentManager.beginTransaction()
             .replace(android.R.id.content, NavigateFragment())
