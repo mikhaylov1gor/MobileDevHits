@@ -7,15 +7,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
 import kotlin.math.abs
 import kotlin.math.exp
 
@@ -42,7 +37,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         var currentBitmap: Bitmap = imageBitmap
 
         // button listeners
-        val saveChangesButton: ImageButton = findViewById(R.id.button_save_color_changes)
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
         saveChangesButton.setOnClickListener {
             saveChanges(currentBitmap)
         }

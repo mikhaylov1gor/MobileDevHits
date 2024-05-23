@@ -85,7 +85,7 @@ class VectorEditActivity : BaseFiltersActivity() {
         var currentBitmap: Bitmap = imageBitmap
 
         // button listeners
-        val saveChangesButton: ImageButton = findViewById(R.id.button_save_vector_edit_changes)
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
         saveChangesButton.setOnClickListener {
             saveChanges(currentBitmap)
         }

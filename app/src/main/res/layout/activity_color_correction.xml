@@ -101,7 +101,7 @@
     </HorizontalScrollView>
 
     <ImageButton
-        android:id="@+id/button_save_color_changes"
+        android:id="@+id/button_save_changes"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="32dp"
@@ -120,7 +120,7 @@
         android:layout_marginStart="76dp"
         android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_save_color_changes"
+        app:layout_constraintEnd_toStartOf="@+id/button_save_changes"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
