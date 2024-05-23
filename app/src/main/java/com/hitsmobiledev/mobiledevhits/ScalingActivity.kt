@@ -33,7 +33,7 @@ class ScalingActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        val coroutineScope = CoroutineScope(Dispatchers.Main)
+        val coroutineScopeMain = CoroutineScope(Dispatchers.Main)
         var seekBar = findViewById<SeekBar>(R.id.scalingScale)
         seekBar.max = 4000
         seekBar.min = 500
@@ -79,9 +79,9 @@ class ScalingActivity : BaseFiltersActivity() {
                 }
                 builder.show()
             } else {
-                coroutineScope.launch {
+                coroutineScopeMain.launch {
                     val prevPixels = IntArray(width * height)
-                    var newPixels = IntArray(newWidth * newHeight)
+                    var newPixels: IntArray
                     imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
                     if (scalingValue < 1) {
                         newPixels = trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
@@ -144,21 +144,25 @@ class ScalingActivity : BaseFiltersActivity() {
         return@withContext newPixels
     }
 
-    private suspend fun trilinearFiltering(prevPixels: IntArray, width: Int, height: Int, newWidth: Int, newHeight: Int): IntArray = withContext(Dispatchers.Default) {
+    private suspend fun trilinearFiltering(prevPixels: IntArray, width: Int, height: Int, newWidth: Int, newHeight: Int): IntArray = withContext(Dispatchers.Main) {
         var newPixels = IntArray(newWidth * newHeight)
         var firstWidth = width
         var firstHeight = height;
         var firstLevelPixels = prevPixels;
-
-        if (width * height < 960 * 720){
+        if (width * height < 960 * 720) {
             firstWidth = (width.toFloat() / scalingValue).toInt()
             firstHeight = (height.toFloat() / scalingValue).toInt()
-            firstLevelPixels = blur(bilinearFiltering(prevPixels, firstWidth, firstHeight), firstWidth, firstHeight)
+            runBlocking {
+                firstLevelPixels = blur(bilinearFiltering(prevPixels, firstWidth, firstHeight), firstWidth, firstHeight)
+            }
         }
 
         val secondWidth = (width.toFloat() * scalingValue * scalingValue * 3 / 2).toInt()
         val secondHeight = (height.toFloat() * scalingValue * scalingValue * 3 / 2).toInt()
-        var secondLevelPixels = bilinearFiltering(prevPixels, secondWidth, secondHeight)
+        var secondLevelPixels: IntArray
+        runBlocking {
+            secondLevelPixels = bilinearFiltering(prevPixels, secondWidth, secondHeight)
+        }
 
         val firstCoeffWidth = (newWidth - 1).toFloat() / (firstWidth - 1).toFloat()
         val firstCoeffHeight = (newHeight - 1).toFloat() / (firstHeight - 1).toFloat()
