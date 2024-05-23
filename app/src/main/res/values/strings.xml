@@ -24,4 +24,7 @@
     <string name="button_return">button_return</string>
     <string name="colorfilterphoto">ColorFilterPhoto</string>
     <string name="button_back_to_filters">button_back_to_filters</string>
+    <string name="button_edit" />
+    <string name="button_save_vector_edit_changes" />
+    <string name="currentPhoto" />
 </resources>

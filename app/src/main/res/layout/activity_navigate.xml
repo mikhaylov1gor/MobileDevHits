@@ -13,16 +13,18 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:onClick="returnBack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/arrow_left"
-        android:contentDescription="@string/button_return" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/arrow_left" />
 
     <HorizontalScrollView
         android:id="@+id/toolsScroller"
-        android:layout_width="350dp"
+        android:layout_width="345dp"
         android:layout_height="69dp"
-        android:scrollbars="vertical"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,8 +46,6 @@
                 android:src="@drawable/ic_rotate"
                 tools:src="@drawable/ic_rotate"
                 tools:srcCompat="@drawable/ic_rotate" />
-
-
 
             <ImageButton
                 android:id="@+id/color"
