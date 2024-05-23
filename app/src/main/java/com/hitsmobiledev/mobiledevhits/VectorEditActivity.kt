@@ -95,7 +95,6 @@ class VectorEditActivity : BaseFiltersActivity() {
             returnToFilters()
         }
 
-        // draw func
         val editButton: ImageButton = findViewById(R.id.button_edit)
         editButton.setOnClickListener {
             points = mutableListOf<Point>()
@@ -107,7 +106,6 @@ class VectorEditActivity : BaseFiltersActivity() {
             processing(currentBitmap, points)
         }
 
-        // Set onTouchListener to imageView
         imageView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 points.add(Point(event.x.toInt(), event.y.toInt()))
