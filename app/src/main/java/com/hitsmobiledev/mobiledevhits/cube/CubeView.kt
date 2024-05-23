@@ -10,7 +10,6 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import Cube.*
-import android.util.Log
 
 class CubeView (
     context: Context,
@@ -30,7 +29,7 @@ class CubeView (
         Color.rgb(128, 0, 128),
         Color.rgb(255, 0, 0),
         Color.rgb(0, 255, 0),
-        Color.rgb(255, 255, 0),
+        Color.rgb(255, 100, 0),
         Color.rgb(255, 0, 255)
     )
 
@@ -42,6 +41,7 @@ class CubeView (
         val rotationMatrix: Matrix3x3 = rotationY * rotationX
 
         val rotatedFaces: List<Face> = cube.rotate(rotationMatrix)
+        paint.strokeWidth = scaleFactor * 2
         for (face in rotatedFaces) {
             val centerZ = calculateCenterZ(face.vertices)
             if (centerZ > 0) {
@@ -64,9 +64,22 @@ class CubeView (
                 paint.color = colors[face.number - 1]
                 canvas.drawPath(path, paint)
 
+                val numberPath = Path()
+                numberPath.moveTo(
+                    face.numberInPoints[0].x * scaleFactor + width / 2,
+                    face.numberInPoints[0].y * scaleFactor + height / 2
+                )
+                for (point in face.numberInPoints){
+                    numberPath.lineTo(
+                        point.x * scaleFactor + width  / 2,
+                        point.y * scaleFactor + height  / 2
+                    )
+                }
+
                 paint.style = Paint.Style.STROKE
+                paint.color = Color.WHITE
+                canvas.drawPath(numberPath, paint)
                 paint.color = Color.BLACK
-                paint.strokeWidth = 5f
                 canvas.drawPath(path, paint)
             }
         }

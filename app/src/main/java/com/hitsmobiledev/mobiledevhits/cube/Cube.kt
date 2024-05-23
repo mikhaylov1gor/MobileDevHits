@@ -10,27 +10,94 @@ data class Point(val x: Float, val y: Float, val z: Float) {
     operator fun div(d: Float) = Point(x / d, y / d, z / d)
 }
 
-data class Face(val vertices: List<Point>, val number: Int)
+data class Face(val vertices: List<Point>, val number: Int, val numberInPoints: List<Point>)
 
 class Cube() {
     private val size: Float = 200f
+    private val halfSize = size / 2
     private val vertices: List<Point> = listOf(
-        Point(-(size / 2), -(size / 2), (size / 2)),
-        Point((size / 2), -(size / 2), (size / 2)),
-        Point((size / 2), (size / 2), (size / 2)),
-        Point(-(size / 2), (size / 2), (size / 2)),
-        Point(-(size / 2), -(size / 2), -(size / 2)),
-        Point((size / 2), -(size / 2), -(size / 2)),
-        Point((size / 2), (size / 2), -(size / 2)),
-        Point(-(size / 2), (size / 2), -(size / 2))
+        Point(-halfSize, -halfSize, halfSize),
+        Point(halfSize, -halfSize, halfSize),
+        Point(halfSize, halfSize, halfSize),
+        Point(-halfSize, halfSize, halfSize),
+        Point(-halfSize, -halfSize, -halfSize),
+        Point(halfSize, -halfSize, -halfSize),
+        Point(halfSize, halfSize, -halfSize),
+        Point(-halfSize, halfSize, -halfSize)
+    )
+    private val numbersInPoints: List<List<Point>> = listOf(
+        listOf(
+            Point(-3f / 10f * halfSize, -2f / 10f * halfSize, halfSize),
+            Point(1f / 10f * halfSize, -7f / 10f * halfSize, halfSize),
+            Point(1f / 10f * halfSize, 7f / 10f * halfSize, halfSize)
+        ),
+        listOf(
+            Point(halfSize, -6f / 10f * halfSize, 3f / 10f * halfSize),
+            Point(halfSize, -7f / 10f * halfSize, 2f / 10f * halfSize),
+            Point(halfSize, -7f / 10f * halfSize, -2f / 10f * halfSize),
+            Point(halfSize, -6f / 10f * halfSize, -3f / 10f * halfSize),
+            Point(halfSize, -2f / 10f * halfSize, -3f / 10f * halfSize),
+            Point(halfSize, 6f / 10f * halfSize, 3f / 10f * halfSize),
+            Point(halfSize, 7f / 10f * halfSize, 3f / 10f * halfSize),
+            Point(halfSize, 7f / 10f * halfSize, -3f / 10f * halfSize)
+        ),
+        listOf(
+            Point(3f / 10f * halfSize, -6f / 10f * halfSize, -halfSize),
+            Point(2f / 10f * halfSize, -7f / 10f * halfSize, -halfSize),
+            Point(-2f / 10f * halfSize, -7f / 10f * halfSize, -halfSize),
+            Point(-3f / 10f * halfSize, -6f / 10f * halfSize, -halfSize),
+            Point(-3f / 10f * halfSize, -2f / 10f * halfSize, -halfSize),
+            Point(-2f / 10f * halfSize, -1f / 10f * halfSize, -halfSize),
+            Point(0f, 0f, -halfSize),
+            Point(-2f / 10f * halfSize, 1f / 10f * halfSize, -halfSize),
+            Point(-3f / 10f * halfSize, 2f / 10f * halfSize, -halfSize),
+            Point(-3f / 10f * halfSize, 6f / 10f * halfSize, -halfSize),
+            Point(-2f / 10f * halfSize, 7f / 10f * halfSize, -halfSize),
+            Point(2f / 10f * halfSize, 7f / 10f * halfSize, -halfSize),
+            Point(3f / 10f * halfSize, 6f / 10f * halfSize, -halfSize)
+        ),
+        listOf(
+            Point(-halfSize, -7f / 10f * halfSize, -3f / 10f * halfSize),
+            Point(-halfSize, -1f / 10f * halfSize, -3f / 10f * halfSize),
+            Point(-halfSize, 0f, -2f / 10f * halfSize),
+            Point(-halfSize, 0f, 3f / 10f * halfSize),
+            Point(-halfSize, -7f / 10f * halfSize, 3f / 10f * halfSize),
+            Point(-halfSize, 7f / 10f * halfSize, 3f / 10f * halfSize)
+        ),
+        listOf(
+            Point(3f / 10f * halfSize, -halfSize, -7f / 10f * halfSize),
+            Point(-3f / 10f * halfSize, -halfSize, -7f / 10f * halfSize),
+            Point(-3f / 10f * halfSize, -halfSize, 0f),
+            Point(-2f / 10f * halfSize, -halfSize, -1f / 10f * halfSize),
+            Point(2f / 10f * halfSize, -halfSize, -1f / 10f * halfSize),
+            Point(3f / 10f * halfSize, -halfSize, 0f),
+            Point(3f / 10f * halfSize, -halfSize, 6f / 10f * halfSize),
+            Point(2f / 10f * halfSize, -halfSize, 7f / 10f * halfSize),
+            Point(-2f / 10f * halfSize, -halfSize, 7f / 10f * halfSize),
+            Point(-3f / 10f * halfSize, -halfSize, 6f / 10f * halfSize)
+        ),
+        listOf(
+            Point(3f / 10f * halfSize, halfSize, 6f / 10f * halfSize),
+            Point(2f / 10f * halfSize, halfSize, 7f / 10f * halfSize),
+            Point(-2f / 10f * halfSize, halfSize, 7f / 10f * halfSize),
+            Point(-3f / 10f * halfSize, halfSize, 6f / 10f * halfSize),
+            Point(-3f / 10f * halfSize, halfSize, -6f / 10f * halfSize),
+            Point(-2f / 10f * halfSize, halfSize, -7f / 10f * halfSize),
+            Point(2f / 10f * halfSize, halfSize, -7f / 10f * halfSize),
+            Point(3f / 10f * halfSize, halfSize, -6f / 10f * halfSize),
+            Point(3f / 10f * halfSize, halfSize, 0f),
+            Point(2f / 10f * halfSize, halfSize, 1f / 10f * halfSize),
+            Point(-2f / 10f * halfSize, halfSize, 1f / 10f * halfSize),
+            Point(-3f / 10f * halfSize, halfSize, 0f)
+        ),
     )
      private val faces: List<Face> =  listOf(
-            Face(listOf(vertices[0], vertices[1], vertices[2], vertices[3]), 1),
-            Face(listOf(vertices[1], vertices[5], vertices[6], vertices[2]), 2),
-            Face(listOf(vertices[5], vertices[4], vertices[7], vertices[6]), 3),
-            Face(listOf(vertices[4], vertices[0], vertices[3], vertices[7]), 4),
-            Face(listOf(vertices[4], vertices[5], vertices[1], vertices[0]), 5),
-            Face(listOf(vertices[3], vertices[2], vertices[6], vertices[7]), 6)
+            Face(listOf(vertices[0], vertices[1], vertices[2], vertices[3]), 1, numbersInPoints[0]),
+            Face(listOf(vertices[1], vertices[5], vertices[6], vertices[2]), 2, numbersInPoints[1]),
+            Face(listOf(vertices[5], vertices[4], vertices[7], vertices[6]), 3, numbersInPoints[2]),
+            Face(listOf(vertices[4], vertices[0], vertices[3], vertices[7]), 4, numbersInPoints[3]),
+            Face(listOf(vertices[4], vertices[5], vertices[1], vertices[0]), 5, numbersInPoints[4]),
+            Face(listOf(vertices[3], vertices[2], vertices[6], vertices[7]), 6, numbersInPoints[5])
         )
 
     fun rotate(rotationMatrix: Matrix3x3): List<Face> {
@@ -40,7 +107,11 @@ class Cube() {
             for (vertex in face.vertices){
                 newVertices.add(rotationMatrix * vertex)
             }
-            result.add(Face(newVertices, face.number))
+            val newNumberPoints: ArrayList<Point> = ArrayList()
+            for (point in face.numberInPoints){
+                newNumberPoints.add(rotationMatrix * point)
+            }
+            result.add(Face(newVertices, face.number, newNumberPoints))
         }
         return result
     }
