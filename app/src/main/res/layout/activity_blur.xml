@@ -8,16 +8,16 @@
 
     <ImageView
         android:id="@+id/currentPhoto"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
+        android:layout_width="220dp"
+        android:layout_height="354dp"
         android:contentDescription="@string/photo"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389"
+        app:layout_constraintVertical_bias="0.274"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -30,4 +30,96 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/mask_button"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:text="kk"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentPhoto" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/treshold_slider"
+        android:layout_width="222dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="9dp"
+        android:stepSize="1"
+        android:value="20"
+        android:valueFrom="0"
+        android:valueTo="255"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mask_button"
+        tools:ignore="MissingConstraints" />
+
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/radius_slider"
+        android:layout_width="222dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="8dp"
+        android:stepSize="1"
+        android:value="12"
+        android:valueFrom="0"
+
+        android:valueTo="80"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/treshold_slider"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/amount_slider"
+        android:layout_width="222dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="8dp"
+        android:stepSize="0.1"
+        android:value="0.4"
+        android:valueFrom="0.0"
+
+        android:valueTo="2.0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radius_slider"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/treshold_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Threshold"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/treshold_slider" />
+
+    <TextView
+        android:id="@+id/radius_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Radius"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/radius_slider" />
+
+    <TextView
+        android:id="@+id/amount_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Amount"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/amount_slider" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
