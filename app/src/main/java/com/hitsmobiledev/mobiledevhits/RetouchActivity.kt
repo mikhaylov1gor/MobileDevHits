@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.ImageView
 import android.widget.SeekBar
@@ -132,8 +131,11 @@ class RetouchActivity : BaseFiltersActivity() {
         }
 
         if (event.action == MotionEvent.ACTION_UP){
-            for (point in queue){
-                retouching(point.y, point.y)
+            while (!queue.isEmpty()) {
+                val point = queue.poll()
+                if (point != null) {
+                    retouching(point.x, point.y)
+                }
             }
         }
 
