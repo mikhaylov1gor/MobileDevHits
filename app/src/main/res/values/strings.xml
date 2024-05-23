@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">mobile dev hits</string>
-    <string name="rotate">ROTATE</string>
+    <string name="rotate_button_text">Rotate</string>
+    <string name="rotate">TODO</string>
     <string name="color">COLOR</string>
     <string name="scale">TODO</string>
+    <string name="detect_faces">Detect</string>
     <string name="face">TODO</string>
     <string name="vector_edit">TODO</string>
     <string name="retouch">TODO</string>
