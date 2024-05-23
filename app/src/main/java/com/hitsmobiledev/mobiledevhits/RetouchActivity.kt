@@ -1,15 +1,19 @@
 package com.hitsmobiledev.mobiledevhits
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MotionEvent
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import java.util.LinkedList
 import java.util.Queue
 import kotlin.math.max
@@ -30,6 +34,7 @@ class RetouchActivity : BaseFiltersActivity() {
     private var scaling = 0f
     private var brushSize = 25f
     private var coefficient = 0.5f
+    private val filterViewModel : filterViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +79,14 @@ class RetouchActivity : BaseFiltersActivity() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+
+        val applyButton = findViewById<ImageButton>(R.id.button_save_changes)
+        applyButton.setOnClickListener{
+            filterViewModel.setImageUri(saveBitmapToCache(this, imageBitmap))
+            val intent = Intent(this@RetouchActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", filterViewModel.imageUri.value)
+            this@RetouchActivity.startActivity(intent)
+        }
     }
 
     private fun calculateBorders(){

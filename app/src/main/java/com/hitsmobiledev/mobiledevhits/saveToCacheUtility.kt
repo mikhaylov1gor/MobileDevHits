@@ -5,9 +5,11 @@ import android.net.Uri
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.UUID
 
-fun saveBitmapToCache(context: Context, bitmap: Bitmap, filename: String): Uri {
+fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
     val cacheDir = context.cacheDir
+    val filename = UUID.randomUUID().toString()
     val file = File(cacheDir, "$filename.png")
     try {
         FileOutputStream(file).use { out ->
@@ -17,4 +19,11 @@ fun saveBitmapToCache(context: Context, bitmap: Bitmap, filename: String): Uri {
         e.printStackTrace()
     }
     return Uri.fromFile(file)
+}
+
+fun deleteFileFromCache(uri: Uri) {
+    val file = File(uri.path)
+    if (file.exists()) {
+        file.delete()
+    }
 }

@@ -24,7 +24,7 @@ open class BaseFiltersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigate)
 
-        filterViewModel = ViewModelProvider(this).get(filterViewModel::class.java)
+        imageUri = intent.getParcelableExtra("currentPhoto")!!
 
 
         supportFragmentManager.beginTransaction()
