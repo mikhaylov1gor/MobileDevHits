@@ -15,7 +15,6 @@ class filterViewModel : ViewModel() {
 
     fun setImageUri(uri: Uri) {
         if (_imageUri.value != null) {
-
             if (undoStack.size == 5) {
                 undoStack.removeAt(0)
             }
@@ -28,14 +27,18 @@ class filterViewModel : ViewModel() {
     fun undo() {
         if (undoStack.isNotEmpty()) {
             redoStack.add(_imageUri.value!!)
-            _imageUri.value = undoStack.removeLast()
+            val uriToRemove = undoStack.removeLast()
+            deleteFileFromCache(uriToRemove)
+            _imageUri.value = if (undoStack.isNotEmpty()) undoStack.last() else null
         }
     }
 
     fun redo() {
         if (redoStack.isNotEmpty()) {
             undoStack.add(_imageUri.value!!)
-            _imageUri.value = redoStack.removeLast()
+            val uriToRemove = redoStack.removeLast()
+            deleteFileFromCache(uriToRemove)
+            _imageUri.value = uriToRemove
         }
     }
 }

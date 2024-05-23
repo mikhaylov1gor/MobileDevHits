@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -18,6 +19,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -28,6 +30,7 @@ class AffineActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
     private lateinit var imageBitmap: Bitmap
     private lateinit var imageUri: Uri
+    private var isChanged = false
     private var startPoints = mutableListOf<Point>()
     private var finishPoints = mutableListOf<Point>()
 
@@ -43,6 +46,7 @@ class AffineActivity : BaseFiltersActivity() {
 
     private var c = 0f
     private var d = 0f
+    private val filterViewModel : filterViewModel by viewModels()
     private var ty = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +67,7 @@ class AffineActivity : BaseFiltersActivity() {
             returnToFilters()
         }
 
+
         val setStartPoints: Button = findViewById(R.id.button_start_points)
         setStartPoints.setOnClickListener {
             setStartPoints(currentBitmap)
@@ -76,6 +81,7 @@ class AffineActivity : BaseFiltersActivity() {
         val startTransform: Button = findViewById(R.id.button_confirm)
         startTransform.setOnClickListener {
             affineTransform(currentBitmap)
+            isChanged = true
         }
     }
 
