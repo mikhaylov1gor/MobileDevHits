@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.hitsmobiledev.mobiledevhits.cube.CubeActivity
 
 
 open class BaseFiltersActivity : AppCompatActivity() {
@@ -58,7 +59,7 @@ open class BaseFiltersActivity : AppCompatActivity() {
     }
 
     fun chooseDiceFilter(view: View){
-        val intent = Intent(this@BaseFiltersActivity, DiceActivity::class.java)
+        val intent = Intent(this@BaseFiltersActivity, CubeActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
         super.onStop()
