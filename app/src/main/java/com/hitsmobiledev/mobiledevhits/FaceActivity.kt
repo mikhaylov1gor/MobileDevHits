@@ -55,32 +55,35 @@ class FaceActivity : BaseFiltersActivity() {
             cascadeClassifier = CascadeClassifier(cascadeFile.absolutePath)
 
             val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
-            val mat = Mat()
-            Utils.bitmapToMat(bitmap, mat)
+            if (bitmap != null) {
+                val mat = Mat()
+                Utils.bitmapToMat(bitmap, mat)
 
-            val grayMat = Mat()
-            Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
+                val grayMat = Mat()
+                Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
 
-            val faces = MatOfRect()
-            cascadeClassifier?.detectMultiScale(
-                grayMat,
-                faces,
-                1.1,
-                2,
-                2,
-                Size(30.0, 30.0),
-                Size()
-            )
-
-            val faceArray = faces.toArray()
-            for (rect in faceArray) {
-                Imgproc.rectangle(
-                    mat,
-                    Point(rect.x.toDouble(), rect.y.toDouble()),
-                    Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()),
-                    Scalar(0.0, 255.0, 0.0, 255.0),
-                    3
+                val faces = MatOfRect()
+                cascadeClassifier.detectMultiScale(
+                    grayMat,
+                    faces,
+                    1.1,
+                    2,
+                    2,
+                    Size(30.0, 30.0),
+                    Size()
                 )
+
+                val faceArray = faces.toArray()
+                for (rect in faceArray) {
+                    Imgproc.rectangle(
+                        mat,
+                        Point(rect.x.toDouble(), rect.y.toDouble()),
+                        Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()),
+                        Scalar(0.0, 255.0, 0.0, 255.0),
+                        3
+                    )
+                }
+
 
                 resultBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
 
