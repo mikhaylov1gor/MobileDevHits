@@ -23,8 +23,10 @@ fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
 }
 
 fun deleteFileFromCache(uri: Uri) {
-    val file = File(uri.path)
-    if (file.exists()) {
-        file.delete()
+    val file = uri.path?.let { File(it) }
+    if (file != null) {
+        if (file.exists()) {
+            file.delete()
+        }
     }
 }
