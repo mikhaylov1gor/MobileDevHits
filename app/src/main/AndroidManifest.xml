@@ -48,15 +48,6 @@
         </activity>
 
         <activity
-            android:name=".CameraActivity"
-            android:exported="true">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-
-        <activity
             android:name=".BaseFiltersActivity"
             android:exported="true">
             <intent-filter>
