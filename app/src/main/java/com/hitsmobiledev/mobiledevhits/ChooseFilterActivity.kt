@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +30,15 @@ class ChooseFilterActivity : BaseFiltersActivity() {
 
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
+
+        val saveButton : ImageButton = findViewById(R.id.button_save)
+        saveButton.setOnClickListener {
+            saveImageToGallery(MediaStore.Images.Media.getBitmap(
+                this@ChooseFilterActivity.contentResolver,
+                imageUri)
+            )
+            Toast.makeText(this, "Image saved!", Toast.LENGTH_SHORT).show()
+        }
 
     }
 

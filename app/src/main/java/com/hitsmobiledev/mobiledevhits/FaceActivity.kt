@@ -90,7 +90,6 @@ class FaceActivity : BaseFiltersActivity() {
                 Utils.matToBitmap(mat, resultBitmap)
                 imageView.setImageBitmap(resultBitmap)
 
-                grayMat.release()
                 mat.release()
             }
         }

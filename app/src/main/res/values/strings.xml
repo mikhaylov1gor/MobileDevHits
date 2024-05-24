@@ -32,9 +32,11 @@
     <string name="button_undo" />
     <string name="button_redu" />
     <string name="button_save" />
-    <string name="detect_faces" />
+    <string name="detect_faces">Detect</string>
     <string name="brush_size" />
     <string name="coefficient" />
-    <string name="angle_rotation" />
+    <string name="angle_rotation">Angle rotation</string>
     <string name="scalling_button_name" />
+    <string name="mask">Mask</string>
+    <string name="rotate_btn">Rotate</string>
 </resources>

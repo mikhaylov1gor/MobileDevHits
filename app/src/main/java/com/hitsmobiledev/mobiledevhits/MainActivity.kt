@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         val intent = if (Build.VERSION.SDK_INT >= 33) {
             Intent(MediaStore.ACTION_PICK_IMAGES).apply {
                 type = "image/*"
-                putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, 10)  // or any other number for maximum images
+                putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, 10)
             }
         } else {
             Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
