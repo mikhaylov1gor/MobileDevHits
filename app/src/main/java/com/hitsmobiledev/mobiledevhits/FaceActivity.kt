@@ -72,6 +72,15 @@ class FaceActivity : BaseFiltersActivity() {
             this@FaceActivity.startActivity(intent)
             finish()
         }
+
+        val cancelChangesButton: ImageButton = findViewById(R.id.button_cancel)
+        cancelChangesButton.setOnClickListener {
+            val intent = Intent(this@FaceActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", imageUri)
+            this@FaceActivity.startActivity(intent)
+            finish()
+        }
+
     }
 
     private fun detectFaces(bitmap : Bitmap) {

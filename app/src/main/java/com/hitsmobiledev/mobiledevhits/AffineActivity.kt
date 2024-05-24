@@ -85,11 +85,13 @@ class AffineActivity : BaseFiltersActivity() {
             finish()
         }
 
-        val returnToFiltersButton: ImageButton = findViewById(R.id.button_cancel)
-        returnToFiltersButton.setOnClickListener {
-            returnToFilters()
+        val cancelChangesButton: ImageButton = findViewById(R.id.button_cancel)
+        cancelChangesButton.setOnClickListener {
+            val intent = Intent(this@AffineActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", imageUri)
+            this@AffineActivity.startActivity(intent)
+            finish()
         }
-
 
         val setStartPoints: Button = findViewById(R.id.button_start_points)
         setStartPoints.setOnClickListener {
@@ -104,22 +106,6 @@ class AffineActivity : BaseFiltersActivity() {
         val startTransform: Button = findViewById(R.id.button_confirm)
         startTransform.setOnClickListener {
             affineTransform(currentBitmap)
-        }
-    }
-
-    private fun returnToFilters() {
-        if (currentIndex > 0) {
-            currentBitmap = conditions[currentIndex - 1]
-            imageView.setImageBitmap(currentBitmap)
-            currentIndex--
-        }
-    }
-
-    private fun redu() {
-        if (currentIndex < conditions.size - 1) {
-            currentBitmap = conditions[currentIndex + 1]
-            imageView.setImageBitmap(currentBitmap)
-            currentIndex++
         }
     }
 

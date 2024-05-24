@@ -1,5 +1,6 @@
 package com.hitsmobiledev.mobiledevhits
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -72,6 +73,7 @@ class VectorEditActivity : BaseFiltersActivity() {
     private lateinit var imageUri: Uri
     private var points = mutableListOf<Point>()
 
+    @SuppressLint("ClickableViewAccessibility", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -85,10 +87,7 @@ class VectorEditActivity : BaseFiltersActivity() {
 
         var currentBitmap: Bitmap = imageBitmap
 
-        val returnToFiltersButton: ImageButton = findViewById(R.id.button_redu)
-        returnToFiltersButton.setOnClickListener {
-            returnToFilters()
-        }
+
 
         val editButton: ImageButton = findViewById(R.id.button_edit)
         editButton.setOnClickListener {
@@ -121,6 +120,14 @@ class VectorEditActivity : BaseFiltersActivity() {
             this@VectorEditActivity.startActivity(intent)
             finish()
         }
+
+        val cancelChangesButton: ImageButton = findViewById(R.id.button_cancel)
+        cancelChangesButton.setOnClickListener {
+            val intent = Intent(this@VectorEditActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", imageUri)
+            this@VectorEditActivity.startActivity(intent)
+            finish()
+        }
     }
 
     private fun returnToFilters() {
@@ -130,9 +137,6 @@ class VectorEditActivity : BaseFiltersActivity() {
         finish()
     }
 
-    private fun saveChanges(currentBitmap: Bitmap) {
-        returnToFilters()
-    }
 
     private fun edit(currentBitmap: Bitmap) {
         val editedBitmap = currentBitmap.copy(Bitmap.Config.ARGB_8888, true)

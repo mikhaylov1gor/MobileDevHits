@@ -109,6 +109,14 @@ class ScalingActivity : BaseFiltersActivity() {
             this@ScalingActivity.startActivity(intent)
             finish()
         }
+
+        val cancelChangesButton: ImageButton = findViewById(R.id.button_cancel)
+        cancelChangesButton.setOnClickListener {
+            val intent = Intent(this@ScalingActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", imageUri)
+            this@ScalingActivity.startActivity(intent)
+            finish()
+        }
     }
 
 

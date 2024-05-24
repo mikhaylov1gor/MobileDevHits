@@ -67,6 +67,14 @@ class BlurActivity : BaseFiltersActivity() {
             finish()
         }
 
+        val cancelChangesButton: ImageButton = findViewById(R.id.button_cancel)
+        cancelChangesButton.setOnClickListener {
+            val intent = Intent(this@BlurActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", imageUri)
+            this@BlurActivity.startActivity(intent)
+            finish()
+        }
+
         val thresholdSeekBar = findViewById<SeekBar>(R.id.threshold_seek_bar)
         thresholdSeekBar.max = 255
         thresholdSeekBar.min = 0
@@ -117,6 +125,7 @@ class BlurActivity : BaseFiltersActivity() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+
     }
 
     private suspend fun gaussFilter(

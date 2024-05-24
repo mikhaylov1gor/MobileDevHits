@@ -75,7 +75,13 @@ class RotateActivity : BaseFiltersActivity() {
             finish()
         }
 
-        val cancelChangesButton: ImageButton = findViewById(R.id.button_return)
+        val cancelChangesButton: ImageButton = findViewById(R.id.button_cancel)
+        cancelChangesButton.setOnClickListener {
+            val intent = Intent(this@RotateActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", imageUri)
+            this@RotateActivity.startActivity(intent)
+            finish()
+        }
     }
 
     private fun getRotatedCord(

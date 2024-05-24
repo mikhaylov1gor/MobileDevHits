@@ -88,6 +88,14 @@ class RetouchActivity : BaseFiltersActivity() {
             this@RetouchActivity.startActivity(intent)
             finish()
         }
+
+        val cancelChangesButton: ImageButton = findViewById(R.id.button_cancel)
+        cancelChangesButton.setOnClickListener {
+            val intent = Intent(this@RetouchActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", imageUri)
+            this@RetouchActivity.startActivity(intent)
+            finish()
+        }
     }
 
     private fun calculateBorders() {
