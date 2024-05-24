@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/apply"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/button_return"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:onClick="returnBack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/arrow_left" />
+
+    <HorizontalScrollView
+        android:id="@+id/toolsScroller"
+        android:overScrollMode="never"
+        android:layout_width="345dp"
+        android:layout_height="69dp"
+        android:layout_marginBottom="16dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/toolList"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/rotate"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/rotate"
+                android:onClick="chooseRotateFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_rotate"
+                tools:src="@drawable/ic_rotate"
+                tools:srcCompat="@drawable/ic_rotate" />
+
+            <ImageButton
+                android:id="@+id/color"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/color"
+                android:onClick="chooseColorFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_color_correction"
+                tools:src="@drawable/ic_color_correction"
+                tools:srcCompat="@drawable/ic_color_correction" />
+
+            <ImageButton
+                android:id="@+id/scale"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/scale"
+                android:onClick="chooseScaleFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_scale"
+                tools:src="@drawable/ic_scale"
+                tools:srcCompat="@drawable/ic_scale" />
+
+            <ImageButton
+                android:id="@+id/face"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/face"
+                android:onClick="chooseFaceFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_face"
+                tools:src="@drawable/ic_face"
+                tools:srcCompat="@drawable/ic_face" />
+
+            <ImageButton
+                android:id="@+id/vector_edit"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/vector_edit"
+                android:onClick="chooseVectorEditFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_vector_editor"
+                tools:srcCompat="@drawable/ic_vector_editor" />
+
+            <ImageButton
+                android:id="@+id/retouch"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/retouch"
+                android:onClick="chooseRetouchFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_retouch"
+                tools:srcCompat="@drawable/ic_retouch" />
+
+            <ImageButton
+                android:id="@+id/blur"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/blur"
+                android:onClick="chooseBlurFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_blur"
+                tools:srcCompat="@drawable/ic_blur" />
+
+            <ImageButton
+                android:id="@+id/affine"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/affine"
+                android:onClick="chooseAffineFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_affine"
+                tools:srcCompat="@drawable/ic_affine" />
+
+            <ImageButton
+                android:id="@+id/dice"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/cube"
+                android:onClick="chooseDiceFilter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_dice"
+                tools:srcCompat="@drawable/ic_dice" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

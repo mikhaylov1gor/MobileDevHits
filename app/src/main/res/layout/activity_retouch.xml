@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/apply"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/button_save_changes"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/button_save_affine_changes"
+        app:layout_constraintBottom_toBottomOf="@+id/currentPhoto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/check" />
+
+    <ImageView
+        android:id="@+id/currentPhoto"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <LinearLayout
+        android:id="@+id/brush"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentPhoto"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:id="@+id/brush_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/brush_name"
+                android:layout_width="183dp"
+                android:layout_height="match_parent"
+                android:text="@string/brush_size" />
+
+            <TextView
+                android:id="@+id/brush_size_value"
+                android:layout_width="69dp"
+                android:layout_height="20dp"
+                android:gravity="right" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/brush_seek_bar"
+            android:layout_width="254dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/retouching"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/brush"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:id="@+id/retuch_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/retouch_name"
+                android:layout_width="183dp"
+                android:layout_height="match_parent"
+                android:text="@string/coefficient" />
+
+            <TextView
+                android:id="@+id/retouch_value"
+                android:layout_width="69dp"
+                android:layout_height="20dp"
+                android:gravity="right" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/retouch_seek_bar"
+            android:layout_width="254dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <ImageButton
+        android:id="@+id/button_cancel"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/button_back_to_filters"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_save_changes"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/corner_up_left" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
