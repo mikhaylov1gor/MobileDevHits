@@ -53,7 +53,7 @@
         android:layout_marginBottom="85dp"
         android:contentDescription="@string/button_edit"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_draw_points"
+        android:src="@drawable/ic_none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.2"

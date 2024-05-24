@@ -44,7 +44,7 @@
                 android:layout_height="69dp"
                 android:contentDescription="@string/button_standart_filter"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_number_1" />
+                android:src="@drawable/ic_none" />
 
             <ImageButton
                 android:id="@+id/button_first_filter"
