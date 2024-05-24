@@ -73,7 +73,7 @@ class AffineActivity : BaseFiltersActivity() {
         conditions.add(currentBitmap)
         calculateBorders()
 
-        val saveChangesButton: ImageButton = findViewById(R.id.button_save_affine_changes)
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
         saveChangesButton.setOnClickListener {
             saveChanges(currentBitmap)
         }

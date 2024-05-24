@@ -56,7 +56,7 @@
         android:layout_marginTop="32dp"
         android:contentDescription="@string/button_redu"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_save_affine_changes"
+        app:layout_constraintEnd_toStartOf="@+id/button_save_changes"
         app:layout_constraintHorizontal_bias="0.02"
         app:layout_constraintStart_toEndOf="@+id/button_undo"
         app:layout_constraintTop_toTopOf="parent"
