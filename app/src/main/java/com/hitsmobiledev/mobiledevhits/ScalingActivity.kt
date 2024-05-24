@@ -18,10 +18,11 @@ import kotlinx.coroutines.*
 import kotlin.math.exp
 
 class ScalingActivity : BaseFiltersActivity() {
+    val coroutineScope = CoroutineScope(Dispatchers.Main)
     private lateinit var imageView: ImageView
     private lateinit var imageBitmap: Bitmap
     private lateinit var imageUri: Uri
-
+    private var isWorking: Boolean = false
     private var scaleValue = 1f
 
     @SuppressLint("MissingInflatedId")
@@ -34,8 +35,6 @@ class ScalingActivity : BaseFiltersActivity() {
         imageUri = intent.getParcelableExtra("currentPhoto")!!
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
-
-        val coroutineScopeMain = CoroutineScope(Dispatchers.Main)
 
         val scaleValueSeekBar = findViewById<SeekBar>(R.id.scaleValueSeekBar)
         scaleValueSeekBar.max = 4000
@@ -56,46 +55,7 @@ class ScalingActivity : BaseFiltersActivity() {
 
         val scalingButton: Button = findViewById<Button>(R.id.scaling)
         scalingButton.setOnClickListener {
-            val width = imageBitmap.width
-            val height = imageBitmap.height
-            val newWidth = (width * scaleValue).toInt()
-            val newHeight = (height * scaleValue).toInt()
-
-            if (newWidth * newHeight > 16000000) {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(R.string.size_warning)
-                builder.setMessage(R.string.large_size_warning)
-                builder.setPositiveButton("OK") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                builder.show()
-            } else if (newWidth * newHeight < 10) {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(R.string.size_warning)
-                builder.setMessage(R.string.small_size_warning)
-                builder.setPositiveButton("OK") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                builder.show()
-            } else {
-                coroutineScopeMain.launch {
-                    val prevPixels = IntArray(width * height)
-                    var newPixels: IntArray
-                    imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
-                    if (scaleValue < 1) {
-                        newPixels =
-                            trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
-                    } else {
-                        newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
-                    }
-
-                    val newBitmap =
-                        Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
-                    newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
-                    imageBitmap = newBitmap
-                    imageView.setImageBitmap(newBitmap)
-                }
-            }
+            scale();
         }
 
         val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
@@ -117,6 +77,68 @@ class ScalingActivity : BaseFiltersActivity() {
             this@ScalingActivity.startActivity(intent)
             finish()
         }
+    }
+
+    private fun scale() {
+        if (isWorking) {
+            return
+        }
+
+        val width = imageBitmap.width
+        val height = imageBitmap.height
+        val newWidth = (width * scaleValue).toInt()
+        val newHeight = (height * scaleValue).toInt()
+
+        if (!checkSize(newWidth, newHeight)) {
+            return
+        }
+
+        isWorking = true
+
+        var newPixels: IntArray
+        val builder = AlertDialog.Builder(this)
+        coroutineScope.launch {
+            val prevPixels = IntArray(width * height)
+            imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
+            if (scaleValue < 1) {
+                newPixels =
+                    trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
+            } else {
+                newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
+            }
+
+            val newBitmap =
+                Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+            newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
+            imageBitmap = newBitmap
+            imageView.setImageBitmap(newBitmap)
+            isWorking = false
+        }
+    }
+
+    private fun checkSize(width: Int, height: Int): Boolean {
+        val builder = AlertDialog.Builder(this)
+        if (width * height > 16000000) {
+            builder.setTitle(R.string.size_warning)
+            builder.setMessage(R.string.large_size_warning)
+            builder.setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            builder.show()
+            return false
+        }
+
+        if (width * height < 10) {
+            builder.setTitle(R.string.size_warning)
+            builder.setMessage(R.string.small_size_warning)
+            builder.setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            builder.show()
+            return false
+        }
+
+        return true
     }
 
 
@@ -183,28 +205,29 @@ class ScalingActivity : BaseFiltersActivity() {
         height: Int,
         newWidth: Int,
         newHeight: Int
-    ): IntArray = withContext(Dispatchers.Main) {
+    ): IntArray = withContext(Dispatchers.Default) {
         var newPixels = IntArray(newWidth * newHeight)
         var firstWidth = width
         var firstHeight = height;
         var firstLevelPixels = prevPixels;
-        if (width * height < 960 * 720) {
+        if (width * height < 480 * 360) {
             firstWidth = (width.toFloat() / scaleValue).toInt()
             firstHeight = (height.toFloat() / scaleValue).toInt()
-            runBlocking {
-                firstLevelPixels = blur(
-                    bilinearFiltering(prevPixels, firstWidth, firstHeight),
-                    firstWidth,
-                    firstHeight
-                )
+            firstLevelPixels = runBlocking {
+                bilinearFiltering(prevPixels, firstWidth, firstHeight)
             }
         }
 
-        val secondWidth = (width.toFloat() * scaleValue * scaleValue * 3 / 2).toInt()
-        val secondHeight = (height.toFloat() * scaleValue * scaleValue * 3 / 2).toInt()
+        val secondWidth = (width.toFloat() * scaleValue * 2f / 3f).toInt()
+        val secondHeight = (height.toFloat() * scaleValue * 2f / 3f).toInt()
         var secondLevelPixels: IntArray
-        runBlocking {
-            secondLevelPixels = bilinearFiltering(prevPixels, secondWidth, secondHeight)
+        secondLevelPixels = runBlocking {
+            bilinearFiltering(prevPixels, secondWidth, secondHeight)
+        }
+        if (width * height < 480 * 360) {
+            secondLevelPixels = runBlocking {
+                blur(secondLevelPixels, secondWidth, secondHeight)
+            }
         }
 
         val firstCoeffWidth = (newWidth - 1).toFloat() / (firstWidth - 1).toFloat()
@@ -252,6 +275,12 @@ class ScalingActivity : BaseFiltersActivity() {
             jobs.add(job)
         }
         jobs.forEach { it.join() }
+
+        if (width * height < 480 * 360) {
+            newPixels = runBlocking {
+                blur(newPixels, newWidth, newHeight)
+            }
+        }
         return@withContext newPixels
     }
 
@@ -295,8 +324,8 @@ class ScalingActivity : BaseFiltersActivity() {
     private suspend fun blur(pixels: IntArray, width: Int, height: Int): IntArray =
         withContext(Dispatchers.Default) {
             var newPixels = IntArray(width * height);
-            var radius = 4;
-            var sigma = 1.0 + 960.0 * 720.0 / width.toFloat() / height.toFloat();
+            var sigma = 2.0
+            var radius = 6
             val jobs = mutableListOf<Job>()
             for (x in 0 until width) {
                 val job = launch {
@@ -314,10 +343,7 @@ class ScalingActivity : BaseFiltersActivity() {
 
                                 if (newX in 0 until width && newY in 0 until height) {
                                     var weight =
-                                        calculateGaussianWeight(i, sigma) * calculateGaussianWeight(
-                                            j,
-                                            sigma
-                                        )
+                                        calculateGaussianWeight(i, sigma) * calculateGaussianWeight(j, sigma)
                                     red += Color.red(pixels[coord]).toDouble() * weight;
                                     green += Color.green(pixels[coord]).toDouble() * weight;
                                     blue += Color.blue(pixels[coord]).toDouble() * weight;

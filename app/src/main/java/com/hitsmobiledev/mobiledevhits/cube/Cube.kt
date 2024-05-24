@@ -91,24 +91,24 @@ class Cube() {
             Point(-3f / 10f * halfSize, halfSize, 0f)
         ),
     )
-     private val faces: List<Face> =  listOf(
-            Face(listOf(vertices[0], vertices[1], vertices[2], vertices[3]), 1, numbersInPoints[0]),
-            Face(listOf(vertices[1], vertices[5], vertices[6], vertices[2]), 2, numbersInPoints[1]),
-            Face(listOf(vertices[5], vertices[4], vertices[7], vertices[6]), 3, numbersInPoints[2]),
-            Face(listOf(vertices[4], vertices[0], vertices[3], vertices[7]), 4, numbersInPoints[3]),
-            Face(listOf(vertices[4], vertices[5], vertices[1], vertices[0]), 5, numbersInPoints[4]),
-            Face(listOf(vertices[3], vertices[2], vertices[6], vertices[7]), 6, numbersInPoints[5])
-        )
+    private val faces: List<Face> = listOf(
+        Face(listOf(vertices[0], vertices[1], vertices[2], vertices[3]), 1, numbersInPoints[0]),
+        Face(listOf(vertices[1], vertices[5], vertices[6], vertices[2]), 2, numbersInPoints[1]),
+        Face(listOf(vertices[5], vertices[4], vertices[7], vertices[6]), 3, numbersInPoints[2]),
+        Face(listOf(vertices[4], vertices[0], vertices[3], vertices[7]), 4, numbersInPoints[3]),
+        Face(listOf(vertices[4], vertices[5], vertices[1], vertices[0]), 5, numbersInPoints[4]),
+        Face(listOf(vertices[3], vertices[2], vertices[6], vertices[7]), 6, numbersInPoints[5])
+    )
 
     fun rotate(rotationMatrix: Matrix3x3): List<Face> {
         val result = ArrayList<Face>()
-        for (face in faces){
+        for (face in faces) {
             val newVertices: ArrayList<Point> = ArrayList()
-            for (vertex in face.vertices){
+            for (vertex in face.vertices) {
                 newVertices.add(rotationMatrix * vertex)
             }
             val newNumberPoints: ArrayList<Point> = ArrayList()
-            for (point in face.numberInPoints){
+            for (point in face.numberInPoints) {
                 newNumberPoints.add(rotationMatrix * point)
             }
             result.add(Face(newVertices, face.number, newNumberPoints))
