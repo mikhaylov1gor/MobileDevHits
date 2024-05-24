@@ -2,11 +2,14 @@ package com.hitsmobiledev.mobiledevhits
 
 import android.Manifest
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.Gravity
 import android.view.View
@@ -23,7 +26,10 @@ import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
+    private val permissionCode = 123
+
     private lateinit var pickImagesLauncher: ActivityResultLauncher<Intent>
+    private var selectedImages = mutableListOf<Uri>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +48,17 @@ class MainActivity : AppCompatActivity() {
             loadGalleryPhotos()
         }
 
+        val cameraButton: ImageButton = findViewById(R.id.CameraButton)
+        cameraButton.setOnClickListener{
+            if (checkCameraPermission()) {
+                openCamera()
+            } else {
+                requestCameraPermission()
+            }
+        }
+
         pickImagesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                val selectedImages = mutableListOf<Uri>()
                 val data = result.data
                 if (data?.clipData != null) {
                     val clipData = data.clipData
@@ -56,14 +70,71 @@ class MainActivity : AppCompatActivity() {
                     val uri = data.data!!
                     selectedImages.add(uri)
                 }
-                displayGalleryPhotos(selectedImages)
+                displayGalleryPhotos()
             }
         }
     }
 
-    fun openCamera(view: View) {
-        val intent = Intent(this@MainActivity, CameraActivity::class.java)
-        this@MainActivity.startActivity(intent)
+    fun openCamera() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            startActivityForResult(takePictureIntent, permissionCode)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == permissionCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == permissionCode && resultCode == Activity.RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+
+            val uri = saveImageToGallery(imageBitmap)
+
+            uri?.let {
+                selectedImages.add(it)
+                displayGalleryPhotos()
+            }
+        }
+    }
+
+    private fun saveImageToGallery(bitmap: Bitmap): Uri? {
+        val contentResolver = applicationContext.contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, "image_${System.currentTimeMillis()}.jpg")
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+            }
+        }
+
+        val imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        imageUri?.let { uri ->
+            contentResolver.openOutputStream(uri)?.use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+            }
+            return uri
+        }
+        return null
+    }
+
+    private fun checkCameraPermission(): Boolean {
+        return checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestCameraPermission() {
+        requestPermissions(arrayOf(Manifest.permission.CAMERA), permissionCode)
     }
 
     private fun openToolSelector(image: Uri) {
@@ -87,11 +158,11 @@ class MainActivity : AppCompatActivity() {
         pickImagesLauncher.launch(intent)
     }
 
-    private fun displayGalleryPhotos(imageList: List<Uri>) {
+    private fun displayGalleryPhotos() {
         val linearLayout: LinearLayout = findViewById(R.id.PhotosLinearLayout)
         linearLayout.removeAllViews()
 
-        for (imageUri in imageList) {
+        for (imageUri in selectedImages) {
             val imageButton = ImageButton(this)
 
             val buttonSize = 750
