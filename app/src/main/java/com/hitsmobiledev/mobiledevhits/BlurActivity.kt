@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import com.google.android.material.slider.Slider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,7 +20,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.exp
-import kotlin.math.truncate
 
 class BlurActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
@@ -182,7 +180,7 @@ class BlurActivity : BaseFiltersActivity() {
         return@coroutineScope blurredPixels
     }
 
-    suspend fun unsharpenMask(bitmap: Bitmap, amount: Float, radius: Int, treshold: Int): Bitmap {
+    private suspend fun unsharpenMask(bitmap: Bitmap, amount: Float, radius: Int, treshold: Int): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
         val pixels = IntArray(width * height)
@@ -228,12 +226,11 @@ class BlurActivity : BaseFiltersActivity() {
             val diffGreen = Color.green(originalColor) - Color.green(sharpColor)
             val diffBlue = Color.blue(originalColor) - Color.blue(sharpColor)
 
-            val newAlpha = diffAlpha
             val newRed = if (abs(diffRed) > treshold) diffRed else 0
             val newGreen = if (abs(diffGreen) > treshold) diffGreen else 0
             val newBlue = if (abs(diffBlue) > treshold) diffBlue else 0
 
-            mask[i] = Color.argb(newAlpha, newRed, newGreen, newBlue)
+            mask[i] = Color.argb(diffAlpha, newRed, newGreen, newBlue)
         }
 
         return mask

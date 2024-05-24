@@ -31,7 +31,7 @@ class RotateActivity : BaseFiltersActivity() {
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
 
-        var angleSeekBar = findViewById<SeekBar>(R.id.angle_seek_bar)
+        val angleSeekBar = findViewById<SeekBar>(R.id.angle_seek_bar)
         angleSeekBar.max = 360
         angleSeekBar.min = 0
         angleSeekBar.progress = 180
