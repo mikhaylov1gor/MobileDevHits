@@ -3,7 +3,6 @@ package com.hitsmobiledev.mobiledevhits
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,10 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream

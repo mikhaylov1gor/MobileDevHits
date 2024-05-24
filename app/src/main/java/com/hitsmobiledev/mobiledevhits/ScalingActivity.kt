@@ -96,7 +96,6 @@ class ScalingActivity : BaseFiltersActivity() {
         isWorking = true
 
         var newPixels: IntArray
-        val builder = AlertDialog.Builder(this)
         coroutineScope.launch {
             val prevPixels = IntArray(width * height)
             imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)

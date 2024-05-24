@@ -1,6 +1,7 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     fun openCamera() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {

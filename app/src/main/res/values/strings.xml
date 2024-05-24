@@ -47,4 +47,7 @@
     <string name="size_warning">Куда разогнался?</string>
     <string name="large_size_warning">Размер полученной фотографии будет слишком большой</string>
     <string name="small_size_warning">Размер полученной фотографии будет слишком маленький</string>
+    <string name="start">start</string>
+    <string name="finish">finish</string>
+    <string name="confirm">confirm</string>
 </resources>

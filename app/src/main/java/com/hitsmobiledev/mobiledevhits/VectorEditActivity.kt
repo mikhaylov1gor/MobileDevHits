@@ -85,9 +85,7 @@ class VectorEditActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        var currentBitmap: Bitmap = imageBitmap
-
-
+        val currentBitmap: Bitmap = imageBitmap
 
         val editButton: ImageButton = findViewById(R.id.button_edit)
         editButton.setOnClickListener {

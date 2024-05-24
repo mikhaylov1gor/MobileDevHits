@@ -1,7 +1,6 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -9,9 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.MotionEvent
 import android.widget.Button
@@ -19,9 +16,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 import kotlin.math.roundToInt
 
 class AffineActivity : BaseFiltersActivity() {
@@ -311,10 +305,10 @@ class AffineActivity : BaseFiltersActivity() {
         val height = currentBitmap.height
 
 
-        var topLeft: Point = affineFunc(0, 0)
-        var topRight: Point = affineFunc(width - 1, 0)
-        var bottomLeft: Point = affineFunc(0, height - 1)
-        var bottomRight: Point = affineFunc(width - 1, height - 1)
+        val topLeft: Point = affineFunc(0, 0)
+        val topRight: Point = affineFunc(width - 1, 0)
+        val bottomLeft: Point = affineFunc(0, height - 1)
+        val bottomRight: Point = affineFunc(width - 1, height - 1)
 
         minX = listOf(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x).minOrNull() ?: 0
         minY = listOf(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y).minOrNull() ?: 0
@@ -457,7 +451,7 @@ class AffineActivity : BaseFiltersActivity() {
 
     private fun getTrilinearInterpolate(currentBitmap: Bitmap, x: Int, y: Int): Int {
         val color = currentBitmap.getPixel((x.toFloat()).toInt(), (y.toFloat()).toInt())
-        var z = scale - scale.roundToInt()
+        val z = scale - scale.roundToInt()
         return ((1 - z) * color + z * color).toInt()
 
     }

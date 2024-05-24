@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -43,7 +44,7 @@ class RetouchActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        var brushScaleSeekBar = findViewById<SeekBar>(R.id.brush_seek_bar)
+        val brushScaleSeekBar = findViewById<SeekBar>(R.id.brush_seek_bar)
         brushScaleSeekBar.max = 5000
         brushScaleSeekBar.min = 100
         brushScaleSeekBar.progress = 2500
@@ -60,7 +61,7 @@ class RetouchActivity : BaseFiltersActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
-        var retouchingSeekBar = findViewById<SeekBar>(R.id.retouch_seek_bar)
+        val retouchingSeekBar = findViewById<SeekBar>(R.id.retouch_seek_bar)
         retouchingSeekBar.max = 100
         retouchingSeekBar.min = 1
         retouchingSeekBar.progress = 50
@@ -136,8 +137,8 @@ class RetouchActivity : BaseFiltersActivity() {
             if (topBorder <= y && y <= bottomBorder && leftBorder <= x && x <= rightBorder) {
                 x -= leftBorder
                 y -= topBorder
-                var newX = (x / scaling).toInt()
-                var newY = (y / scaling).toInt()
+                val newX = (x / scaling).toInt()
+                val newY = (y / scaling).toInt()
 
                 queue.add(Point(newX, newY))
                 val point = queue.poll()
@@ -204,14 +205,14 @@ class RetouchActivity : BaseFiltersActivity() {
                 val diffY = (pixelY - y).toDouble()
                 val dist = sqrt(diffX * diffX + diffY * diffY)
                 if (brushSizeInt > dist) {
-                    var newCoeff = coefficient * (1f - dist / brushSizeInt.toFloat())
+                    val newCoeff = coefficient * (1f - dist / brushSizeInt.toFloat())
                     val i = (pixelY - startY) * width + pixelX - startX
-                    var pixel = pixels[i]
-                    var red =
+                    val pixel = pixels[i]
+                    val red =
                         ((newCoeff * avgRed) + ((1.0 - newCoeff) * Color.red(pixel).toFloat()))
-                    var green =
+                    val green =
                         ((newCoeff * avgGreen) + ((1.0 - newCoeff) * Color.green(pixel).toFloat()))
-                    var blue =
+                    val blue =
                         ((newCoeff * avgBlue) + ((1.0 - newCoeff) * Color.blue(pixel).toFloat()))
                     pixels[i] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
                 }

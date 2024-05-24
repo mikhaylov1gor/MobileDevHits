@@ -1,17 +1,10 @@
 package com.hitsmobiledev.mobiledevhits
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import NavigateFragment
 import android.content.Intent
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.hitsmobiledev.mobiledevhits.cube.CubeActivity
 
