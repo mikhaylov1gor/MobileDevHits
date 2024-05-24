@@ -49,7 +49,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
             finish()
         }
 
-        val returnToFiltersButton: ImageButton = findViewById(R.id.button_redu)
+        val returnToFiltersButton: ImageButton = findViewById(R.id.button_cancel)
         returnToFiltersButton.setOnClickListener {
             returnToFilters()
         }
@@ -114,6 +114,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         val intent = Intent(this@ColorCorrectionActivity, ChooseFilterActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         this@ColorCorrectionActivity.startActivity(intent)
+        finish()
     }
 
     private fun saveChanges(currentBitmap: Bitmap) {

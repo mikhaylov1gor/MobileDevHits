@@ -1,5 +1,6 @@
 package com.hitsmobiledev.mobiledevhits
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -84,15 +85,11 @@ class AffineActivity : BaseFiltersActivity() {
             finish()
         }
 
-        val returnToFiltersButton: ImageButton = findViewById(R.id.button_undo)
+        val returnToFiltersButton: ImageButton = findViewById(R.id.button_cancel)
         returnToFiltersButton.setOnClickListener {
             returnToFilters()
         }
 
-        val reduButton: ImageButton = findViewById(R.id.button_redu)
-        reduButton.setOnClickListener {
-            redu()
-        }
 
         val setStartPoints: Button = findViewById(R.id.button_start_points)
         setStartPoints.setOnClickListener {
@@ -241,7 +238,7 @@ class AffineActivity : BaseFiltersActivity() {
             rightBorder = imageView.right
         }
     }
-
+    @SuppressLint("ClickableViewAccessibility")
     private fun setStartPoints(currentBitmap: Bitmap) {
         edit(startPoints, currentBitmap)
         imageView.setOnTouchListener { _, event ->
@@ -269,6 +266,7 @@ class AffineActivity : BaseFiltersActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setEndPoints(currentBitmap: Bitmap) {
         edit(finishPoints, currentBitmap)
         imageView.setOnTouchListener { _, event ->

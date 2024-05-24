@@ -35,7 +35,7 @@
         app:srcCompat="@drawable/check" />
 
     <ImageButton
-        android:id="@+id/button_undo"
+        android:id="@+id/button_cancel"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="76dp"
@@ -48,20 +48,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/corner_up_left" />
-
-    <ImageButton
-        android:id="@+id/button_redu"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="32dp"
-        android:contentDescription="@string/button_redu"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_save_changes"
-        app:layout_constraintHorizontal_bias="0.02"
-        app:layout_constraintStart_toEndOf="@+id/button_undo"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/corner_up_right" />
 
     <Button
         android:id="@+id/button_start_points"

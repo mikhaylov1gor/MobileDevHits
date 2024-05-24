@@ -36,6 +36,7 @@ class FaceActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
     private lateinit var detectButton: MaterialButton
     private lateinit var cascadeClassifier: CascadeClassifier
+    private lateinit var resultBitmap: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +48,7 @@ class FaceActivity : BaseFiltersActivity() {
 
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
-        var resultBitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
+        resultBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
 
         detectButton.setOnClickListener {
             val cascadeFile = getCascadeFile(resources)
@@ -56,41 +57,7 @@ class FaceActivity : BaseFiltersActivity() {
 
             val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
             if (bitmap != null) {
-                val mat = Mat()
-                Utils.bitmapToMat(bitmap, mat)
-
-                val grayMat = Mat()
-                Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
-
-                val faces = MatOfRect()
-                cascadeClassifier.detectMultiScale(
-                    grayMat,
-                    faces,
-                    1.1,
-                    2,
-                    2,
-                    Size(30.0, 30.0),
-                    Size()
-                )
-
-                val faceArray = faces.toArray()
-                for (rect in faceArray) {
-                    Imgproc.rectangle(
-                        mat,
-                        Point(rect.x.toDouble(), rect.y.toDouble()),
-                        Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()),
-                        Scalar(0.0, 255.0, 0.0, 255.0),
-                        3
-                    )
-                }
-
-
-                resultBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
-
-                Utils.matToBitmap(mat, resultBitmap)
-                imageView.setImageBitmap(resultBitmap)
-
-                mat.release()
+                detectFaces(bitmap)
             }
         }
 
@@ -107,6 +74,43 @@ class FaceActivity : BaseFiltersActivity() {
         }
     }
 
+    private fun detectFaces(bitmap : Bitmap) {
+        val mat = Mat()
+        Utils.bitmapToMat(bitmap, mat)
+
+        val grayMat = Mat()
+        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
+
+        val faces = MatOfRect()
+        cascadeClassifier.detectMultiScale(
+            grayMat,
+            faces,
+            1.1,
+            2,
+            2,
+            Size(30.0, 30.0),
+            Size()
+        )
+
+        val faceArray = faces.toArray()
+        for (rect in faceArray) {
+            Imgproc.rectangle(
+                mat,
+                Point(rect.x.toDouble(), rect.y.toDouble()),
+                Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()),
+                Scalar(0.0, 255.0, 0.0, 255.0),
+                3
+            )
+        }
+
+
+        resultBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
+
+        Utils.matToBitmap(mat, resultBitmap)
+        imageView.setImageBitmap(resultBitmap)
+
+        mat.release()
+    }
     private fun getCascadeFile(resources: Resources): File {
         val cascadeDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val cascadeFile = File(cascadeDir, "haarcascade_frontalface_default.xml")
