@@ -10,6 +10,8 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import Cube.*
+import android.annotation.SuppressLint
+import com.hitsmobiledev.mobiledevhits.R
 
 class CubeView (
     context: Context,
@@ -24,13 +26,15 @@ class CubeView (
     private var scaleFactor: Float  = 1f
     private var previousX: Float  = 0f
     private var previousY: Float  = 0f
+
+    @SuppressLint("ResourceType")
     private val colors = listOf(
-        Color.rgb(0, 255, 255),
-        Color.rgb(128, 0, 128),
-        Color.rgb(255, 0, 0),
-        Color.rgb(0, 255, 0),
-        Color.rgb(255, 100, 0),
-        Color.rgb(255, 0, 255)
+        Color.parseColor(context.getString(R.color.cyan)),
+        Color.parseColor(context.getString(R.color.purple)),
+        Color.parseColor(context.getString(R.color.red)),
+        Color.parseColor(context.getString(R.color.green)),
+        Color.parseColor(context.getString(R.color.orange)),
+        Color.parseColor(context.getString(R.color.magenta)),
     )
 
     override fun onDraw(canvas: Canvas) {

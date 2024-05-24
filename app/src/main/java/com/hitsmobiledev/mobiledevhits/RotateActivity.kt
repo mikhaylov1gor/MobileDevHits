@@ -11,7 +11,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.slider.Slider
 import kotlinx.coroutines.*
 import kotlin.math.cos
 import kotlin.math.max
@@ -32,11 +31,11 @@ class RotateActivity : BaseFiltersActivity() {
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
 
-        var angleSeekBar = findViewById<SeekBar>(R.id.brushAngle)
+        var angleSeekBar = findViewById<SeekBar>(R.id.angle_seek_bar)
         angleSeekBar.max = 360
         angleSeekBar.min = 0
         angleSeekBar.progress = 180
-        val retouchingValueView = findViewById<TextView>(R.id.angleValue)
+        val retouchingValueView = findViewById<TextView>(R.id.angle_value)
         retouchingValueView.text = "$angleRotation"
         angleSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

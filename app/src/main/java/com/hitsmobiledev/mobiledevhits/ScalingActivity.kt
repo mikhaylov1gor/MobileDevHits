@@ -22,7 +22,7 @@ class ScalingActivity : BaseFiltersActivity() {
     private lateinit var imageBitmap: Bitmap
     private lateinit var imageUri: Uri
 
-    private var scalingValue = 1f
+    private var scaleValue = 1f
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,46 +36,43 @@ class ScalingActivity : BaseFiltersActivity() {
         imageView.setImageBitmap(imageBitmap)
 
         val coroutineScopeMain = CoroutineScope(Dispatchers.Main)
-        var seekBar = findViewById<SeekBar>(R.id.scalingScale)
-        seekBar.max = 4000
-        seekBar.min = 500
-        seekBar.progress = 1000
 
-        val scalingValueView = findViewById<TextView>(R.id.scalingValue)
-        scalingValueView.text = "1"
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            @SuppressLint("SetTextI18n")
+        val scaleValueSeekBar = findViewById<SeekBar>(R.id.scaleValueSeekBar)
+        scaleValueSeekBar.max = 4000
+        scaleValueSeekBar.min = 500
+        scaleValueSeekBar.progress = 1000
+        val scaleValueView = findViewById<TextView>(R.id.scaleValue)
+        scaleValueView.text = "$scaleValue"
+        scaleValueSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                scalingValue = progress.toFloat() / 1000
-                scalingValueView.text = "$scalingValue"
+                scaleValue = progress.toFloat() / 1000
+                scaleValueView.text = "$scaleValue"
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
         val scalingButton: Button = findViewById<Button>(R.id.scaling)
         scalingButton.setOnClickListener {
             val width = imageBitmap.width
             val height = imageBitmap.height
-            val newWidth = (width * scalingValue).toInt()
-            val newHeight = (height * scalingValue).toInt()
+            val newWidth = (width * scaleValue).toInt()
+            val newHeight = (height * scaleValue).toInt()
 
             if (newWidth * newHeight > 16000000) {
                 val builder = AlertDialog.Builder(this)
-                builder.setTitle("Куда разогнался?")
-                builder.setMessage("Размер полученной фотографии будет слишком большой")
+                builder.setTitle(R.string.size_warning)
+                builder.setMessage(R.string.large_size_warning)
                 builder.setPositiveButton("OK") { dialog, _ ->
                     dialog.dismiss()
                 }
                 builder.show()
             } else if (newWidth * newHeight < 10) {
                 val builder = AlertDialog.Builder(this)
-                builder.setTitle("Куда разогнался?")
-                builder.setMessage("Размер полученной фотографии будет слишком маленький")
+                builder.setTitle(R.string.size_warning)
+                builder.setMessage(R.string.small_size_warning)
                 builder.setPositiveButton("OK") { dialog, _ ->
                     dialog.dismiss()
                 }
@@ -85,7 +82,7 @@ class ScalingActivity : BaseFiltersActivity() {
                     val prevPixels = IntArray(width * height)
                     var newPixels: IntArray
                     imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
-                    if (scalingValue < 1) {
+                    if (scaleValue < 1) {
                         newPixels = trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
                     } else {
                         newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
@@ -163,15 +160,15 @@ class ScalingActivity : BaseFiltersActivity() {
         var firstHeight = height;
         var firstLevelPixels = prevPixels;
         if (width * height < 960 * 720) {
-            firstWidth = (width.toFloat() / scalingValue).toInt()
-            firstHeight = (height.toFloat() / scalingValue).toInt()
+            firstWidth = (width.toFloat() / scaleValue).toInt()
+            firstHeight = (height.toFloat() / scaleValue).toInt()
             runBlocking {
                 firstLevelPixels = blur(bilinearFiltering(prevPixels, firstWidth, firstHeight), firstWidth, firstHeight)
             }
         }
 
-        val secondWidth = (width.toFloat() * scalingValue * scalingValue * 3 / 2).toInt()
-        val secondHeight = (height.toFloat() * scalingValue * scalingValue * 3 / 2).toInt()
+        val secondWidth = (width.toFloat() * scaleValue * scaleValue * 3 / 2).toInt()
+        val secondHeight = (height.toFloat() * scaleValue * scaleValue * 3 / 2).toInt()
         var secondLevelPixels: IntArray
         runBlocking {
             secondLevelPixels = bilinearFiltering(prevPixels, secondWidth, secondHeight)

@@ -9,6 +9,8 @@ import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.CoroutineScope
@@ -24,9 +26,9 @@ import kotlin.math.truncate
 class BlurActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
     private lateinit var maskButton: Button
-    private lateinit var tresholdSlider: Slider
-    private lateinit var radiusSlider: Slider
-    private lateinit var amountSlider: Slider
+    private var threshold: Int = 0
+    private var radius: Int = 12
+    private var amount: Float = 0.4f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,20 +40,15 @@ class BlurActivity : BaseFiltersActivity() {
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
 
-        tresholdSlider = findViewById(R.id.treshold_slider)
-        radiusSlider = findViewById(R.id.radius_slider)
-        amountSlider = findViewById(R.id.amount_slider)
-
         maskButton = findViewById(R.id.mask_button)
         var finalBitmap : Bitmap = MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
         maskButton.setOnClickListener() {
             val bitmap =
                 MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
 
-
             CoroutineScope(Dispatchers.Main).launch {
 
-                val masked = unsharpenMask(bitmap, amountSlider.value, radiusSlider.value.toInt(), tresholdSlider.value.toInt())
+                val masked = unsharpenMask(bitmap, amount, radius, threshold)
                 imageView.setImageBitmap(masked)
                 finalBitmap = masked
             }
@@ -67,6 +64,57 @@ class BlurActivity : BaseFiltersActivity() {
             }
             this@BlurActivity.startActivity(intent)
         }
+
+        val thresholdSeekBar = findViewById<SeekBar>(R.id.threshold_seek_bar)
+        thresholdSeekBar.max = 255
+        thresholdSeekBar.min = 0
+        thresholdSeekBar.progress = 0
+        val thresholdValueView = findViewById<TextView>(R.id.threshold_value)
+        thresholdValueView.text = "$threshold"
+        thresholdSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                threshold = progress
+                thresholdValueView.text = "$threshold"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        val radiusSeekBar = findViewById<SeekBar>(R.id.radius_seek_bar)
+        radiusSeekBar.max = 80
+        radiusSeekBar.min = 0
+        radiusSeekBar.progress = 12
+        val radiusValueView = findViewById<TextView>(R.id.radius_value)
+        radiusValueView.text = "$radius"
+        radiusSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                radius = progress
+                radiusValueView.text = "$radius"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        val amountSeekBar = findViewById<SeekBar>(R.id.amount_seek_bar)
+        amountSeekBar.max = 20
+        amountSeekBar.min = 0
+        amountSeekBar.progress = 4
+        val amountValueView = findViewById<TextView>(R.id.amount_value)
+        amountValueView.text = "$amount"
+        amountSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                amount = progress.toFloat() / 10
+                amountValueView.text = "$amount"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
 
     private suspend fun gaussFilter(pixels: IntArray, width: Int, height: Int, radius: Int): IntArray = coroutineScope {

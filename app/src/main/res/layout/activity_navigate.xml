@@ -23,6 +23,7 @@
 
     <HorizontalScrollView
         android:id="@+id/toolsScroller"
+        android:scrollbars="none"
         android:layout_width="345dp"
         android:layout_height="69dp"
         android:layout_marginBottom="16dp"
@@ -124,7 +125,7 @@
                 android:id="@+id/dice"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="@string/dice"
+                android:contentDescription="@string/cube"
                 android:onClick="chooseDiceFilter"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_dice"

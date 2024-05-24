@@ -7,13 +7,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MotionEvent
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import java.util.LinkedList
 import java.util.Queue
 import kotlin.math.max
@@ -45,11 +43,11 @@ class RetouchActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        var brushScaleSeekBar = findViewById<SeekBar>(R.id.brushScale)
+        var brushScaleSeekBar = findViewById<SeekBar>(R.id.brush_seek_bar)
         brushScaleSeekBar.max = 5000
         brushScaleSeekBar.min = 100
         brushScaleSeekBar.progress = 2500
-        val brushSizeValueView = findViewById<TextView>(R.id.brushSizeValue)
+        val brushSizeValueView = findViewById<TextView>(R.id.brush_size_value)
         brushSizeValueView.text = "$brushSize"
         brushScaleSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -62,11 +60,11 @@ class RetouchActivity : BaseFiltersActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
-        var retouchingSeekBar = findViewById<SeekBar>(R.id.retouchingScale)
+        var retouchingSeekBar = findViewById<SeekBar>(R.id.retouch_seek_bar)
         retouchingSeekBar.max = 100
         retouchingSeekBar.min = 1
         retouchingSeekBar.progress = 50
-        val retouchingValueView = findViewById<TextView>(R.id.retouchingValue)
+        val retouchingValueView = findViewById<TextView>(R.id.retouch_value)
         retouchingValueView.text = "$coefficient"
         retouchingSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

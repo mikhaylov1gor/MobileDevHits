@@ -57,26 +57,26 @@
         tools:ignore="MissingConstraints">
 
         <LinearLayout
-            android:id="@+id/angleText"
+            android:id="@+id/angle_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/angleValueName"
+                android:id="@+id/angle_value_name"
                 android:layout_width="183dp"
                 android:layout_height="match_parent"
                 android:text="@string/angle_rotation" />
 
             <TextView
-                android:id="@+id/angleValue"
+                android:id="@+id/angle_value"
                 android:layout_width="69dp"
                 android:layout_height="20dp"
                 android:gravity="right" />
         </LinearLayout>
 
         <SeekBar
-            android:id="@+id/brushAngle"
+            android:id="@+id/angle_seek_bar"
             android:layout_width="254dp"
             android:layout_height="wrap_content" />
     </LinearLayout>

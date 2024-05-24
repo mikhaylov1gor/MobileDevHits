@@ -22,16 +22,16 @@
 
     <ImageView
         android:id="@+id/currentPhoto"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
-        android:contentDescription="@string/photo"
-        android:scaleType="fitCenter"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389"
         tools:srcCompat="@tools:sample/avatars" />
 
     <com.google.android.material.button.MaterialButton
