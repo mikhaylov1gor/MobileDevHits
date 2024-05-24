@@ -18,7 +18,6 @@ import com.hitsmobiledev.mobiledevhits.cube.CubeActivity
 
 open class BaseFiltersActivity : AppCompatActivity() {
     private lateinit var imageUri: Uri
-    private lateinit var filterViewModel: filterViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

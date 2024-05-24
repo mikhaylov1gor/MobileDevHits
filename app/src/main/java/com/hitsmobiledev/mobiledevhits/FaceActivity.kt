@@ -2,6 +2,7 @@ package com.hitsmobiledev.mobiledevhits
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,6 +12,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -45,53 +47,42 @@ class FaceActivity : BaseFiltersActivity() {
 
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
+        var resultBitmap : Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
 
         detectButton.setOnClickListener {
             val cascadeFile = getCascadeFile(resources)
             var i = OpenCVLoader.initDebug()
             cascadeClassifier = CascadeClassifier(cascadeFile.absolutePath)
-            Toast.makeText(this, i.toString(), Toast.LENGTH_SHORT).show()
 
-            val inputStream: InputStream? = imageUri?.let { it1 ->
-                contentResolver.openInputStream(
-                    it1
+            val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
+            val mat = Mat()
+            Utils.bitmapToMat(bitmap, mat)
+
+            val grayMat = Mat()
+            Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
+
+            val faces = MatOfRect()
+            cascadeClassifier?.detectMultiScale(
+                grayMat,
+                faces,
+                1.1,
+                2,
+                2,
+                Size(30.0, 30.0),
+                Size()
+            )
+
+            val faceArray = faces.toArray()
+            for (rect in faceArray) {
+                Imgproc.rectangle(
+                    mat,
+                    Point(rect.x.toDouble(), rect.y.toDouble()),
+                    Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()),
+                    Scalar(0.0, 255.0, 0.0, 255.0),
+                    3
                 )
-            }
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            if (bitmap != null) {
-                val mat = Mat()
-                Utils.bitmapToMat(bitmap, mat)
 
-                val grayMat = Mat()
-                Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
-
-                val faces = MatOfRect()
-                cascadeClassifier?.detectMultiScale(
-                    grayMat,
-                    faces,
-                    1.1,
-                    2,
-                    2,
-                    Size(30.0, 30.0),
-                    Size()
-                )
-
-                val faceArray = faces.toArray()
-                for (rect in faceArray) {
-                    Imgproc.rectangle(
-                        mat,
-                        Point(rect.x.toDouble(), rect.y.toDouble()),
-                        Point(
-                            (rect.x + rect.width).toDouble(),
-                            (rect.y + rect.height).toDouble()
-                        ),
-                        Scalar(0.0, 255.0, 0.0, 255.0),
-                        3
-                    )
-                }
-
-                val resultBitmap =
-                    Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
+                resultBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
 
                 Utils.matToBitmap(mat, resultBitmap)
                 imageView.setImageBitmap(resultBitmap)
@@ -99,7 +90,17 @@ class FaceActivity : BaseFiltersActivity() {
                 grayMat.release()
                 mat.release()
             }
+        }
 
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
+        saveChangesButton.setOnClickListener {
+            val newUri = saveBitmapToCache(this, resultBitmap)
+            val intent = Intent(this@FaceActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", newUri)
+            if (imageUri != null) {
+                deleteFileFromCache(imageUri)
+            }
+            this@FaceActivity.startActivity(intent)
         }
     }
 

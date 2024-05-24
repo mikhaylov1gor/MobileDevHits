@@ -34,7 +34,6 @@ class RetouchActivity : BaseFiltersActivity() {
     private var scaling = 0f
     private var brushSize = 25f
     private var coefficient = 0.5f
-    private val filterViewModel : filterViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,11 +79,14 @@ class RetouchActivity : BaseFiltersActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
-        val applyButton = findViewById<ImageButton>(R.id.button_save_changes)
-        applyButton.setOnClickListener{
-            filterViewModel.setImageUri(saveBitmapToCache(this, imageBitmap))
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
+        saveChangesButton.setOnClickListener {
+            val newUri = saveBitmapToCache(this, imageBitmap)
             val intent = Intent(this@RetouchActivity, ChooseFilterActivity::class.java)
-            intent.putExtra("currentPhoto", filterViewModel.imageUri.value)
+            intent.putExtra("currentPhoto", newUri)
+            if (imageUri != null) {
+                deleteFileFromCache(imageUri)
+            }
             this@RetouchActivity.startActivity(intent)
         }
     }

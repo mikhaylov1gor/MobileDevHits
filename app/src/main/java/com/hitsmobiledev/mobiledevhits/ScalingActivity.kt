@@ -2,12 +2,14 @@ package com.hitsmobiledev.mobiledevhits
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
@@ -95,6 +97,17 @@ class ScalingActivity : BaseFiltersActivity() {
                     imageView.setImageBitmap(newBitmap)
                 }
             }
+        }
+
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
+        saveChangesButton.setOnClickListener {
+            val newUri = saveBitmapToCache(this, imageBitmap)
+            val intent = Intent(this@ScalingActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", newUri)
+            if (imageUri != null) {
+                deleteFileFromCache(imageUri)
+            }
+            this@ScalingActivity.startActivity(intent)
         }
     }
 

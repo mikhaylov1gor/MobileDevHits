@@ -84,11 +84,6 @@ class VectorEditActivity : BaseFiltersActivity() {
 
         var currentBitmap: Bitmap = imageBitmap
 
-        // button listeners
-        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
-        saveChangesButton.setOnClickListener {
-            saveChanges(currentBitmap)
-        }
 
         val returnToFiltersButton: ImageButton = findViewById(R.id.button_redu)
         returnToFiltersButton.setOnClickListener {
@@ -113,6 +108,17 @@ class VectorEditActivity : BaseFiltersActivity() {
                 edit(currentBitmap)
             }
             true
+        }
+
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
+        saveChangesButton.setOnClickListener {
+            val newUri = saveBitmapToCache(this, imageBitmap)
+            val intent = Intent(this@VectorEditActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", newUri)
+            if (imageUri != null) {
+                deleteFileFromCache(imageUri)
+            }
+            this@VectorEditActivity.startActivity(intent)
         }
     }
 
@@ -201,5 +207,6 @@ class VectorEditActivity : BaseFiltersActivity() {
         }
 
         imageView.setImageBitmap(editedBitmap)
+        imageBitmap = editedBitmap
     }
 }

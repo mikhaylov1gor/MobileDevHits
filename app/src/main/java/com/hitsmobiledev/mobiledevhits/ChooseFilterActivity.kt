@@ -19,7 +19,6 @@ import java.io.OutputStream
 
 class ChooseFilterActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
-    private val filterViewModel: filterViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

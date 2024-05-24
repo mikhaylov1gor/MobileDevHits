@@ -1,11 +1,13 @@
 package com.hitsmobiledev.mobiledevhits
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.slider.Slider
@@ -41,6 +43,7 @@ class BlurActivity : BaseFiltersActivity() {
         amountSlider = findViewById(R.id.amount_slider)
 
         maskButton = findViewById(R.id.mask_button)
+        var finalBitmap : Bitmap = MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
         maskButton.setOnClickListener() {
             val bitmap =
                 MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
@@ -50,7 +53,19 @@ class BlurActivity : BaseFiltersActivity() {
 
                 val masked = unsharpenMask(bitmap, amountSlider.value, radiusSlider.value.toInt(), tresholdSlider.value.toInt())
                 imageView.setImageBitmap(masked)
+                finalBitmap = masked
             }
+        }
+
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
+        saveChangesButton.setOnClickListener {
+            val newUri = saveBitmapToCache(this, finalBitmap)
+            val intent = Intent(this@BlurActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", newUri)
+            if (imageUri != null) {
+                deleteFileFromCache(imageUri)
+            }
+            this@BlurActivity.startActivity(intent)
         }
     }
 

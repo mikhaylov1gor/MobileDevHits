@@ -1,9 +1,11 @@
 package com.hitsmobiledev.mobiledevhits
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
@@ -49,6 +51,7 @@ class RotateActivity : BaseFiltersActivity() {
         button = findViewById(R.id.rotate_button)
 
         val coroutineScope = CoroutineScope(Dispatchers.Main)
+        var finalBitmap : Bitmap? = null
 
         button.setOnClickListener {
             coroutineScope.launch {
@@ -56,8 +59,20 @@ class RotateActivity : BaseFiltersActivity() {
                     angleRotation,
                     MediaStore.Images.Media.getBitmap(this@RotateActivity.contentResolver, imageUri)
                 )
+                finalBitmap = rotatedImage
                 imageView.setImageBitmap(rotatedImage)
             }
+        }
+
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
+        saveChangesButton.setOnClickListener {
+            val newUri = finalBitmap?.let { it1 -> saveBitmapToCache(this, it1) }
+            val intent = Intent(this@RotateActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", newUri)
+            if (imageUri != null) {
+                deleteFileFromCache(imageUri)
+            }
+            this@RotateActivity.startActivity(intent)
         }
     }
 

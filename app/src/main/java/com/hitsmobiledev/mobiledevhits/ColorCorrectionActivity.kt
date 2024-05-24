@@ -39,7 +39,13 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         // button listeners
         val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
         saveChangesButton.setOnClickListener {
-            saveChanges(currentBitmap)
+            val newUri = saveBitmapToCache(this, currentBitmap)
+            val intent = Intent(this@ColorCorrectionActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", newUri)
+            if (imageUri != null) {
+                deleteFileFromCache(imageUri)
+            }
+            this@ColorCorrectionActivity.startActivity(intent)
         }
 
         val returnToFiltersButton: ImageButton = findViewById(R.id.button_redu)
@@ -67,7 +73,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         mosaicFilterButton.setOnClickListener {
             hideOtherFilterParameters()
             mosaicSizeSeekBar.visibility = View.VISIBLE
-            mosaicFilter(imageBitmap, mosaicSizeSeekBar.progress)
+            currentBitmap = mosaicFilter(imageBitmap, mosaicSizeSeekBar.progress)
         }
 
         // contrast filter
@@ -76,14 +82,14 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         contrastFilterButton.setOnClickListener {
             hideOtherFilterParameters()
             contrastSeekBar.visibility = View.VISIBLE
-            contrastFilter(imageBitmap, contrastSeekBar.progress)
+            currentBitmap = contrastFilter(imageBitmap, contrastSeekBar.progress)
         }
 
         // median filter
         val medianFilterButton: ImageButton = findViewById(R.id.button_fourth_filter)
         medianFilterButton.setOnClickListener {
             hideOtherFilterParameters()
-            medianFilter(imageBitmap, 7)
+            currentBitmap = medianFilter(imageBitmap, 7)
         }
 
         // gauss filter
@@ -92,7 +98,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         gaussFilterButton.setOnClickListener {
             hideOtherFilterParameters()
             gaussSeekBar.visibility = View.VISIBLE
-            gaussFilter(imageBitmap, gaussSeekBar.progress)
+            currentBitmap = gaussFilter(imageBitmap, gaussSeekBar.progress)
         }
     }
 
@@ -138,7 +144,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         return negativeBitmap
     }
 
-    private fun mosaicFilter(imageBitmap: Bitmap, blockSize: Int) {
+    private fun mosaicFilter(imageBitmap: Bitmap, blockSize: Int) : Bitmap {
         val width = imageBitmap.width
         val height = imageBitmap.height
 
@@ -178,6 +184,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         mosaicBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
 
         imageView.setImageBitmap(mosaicBitmap)
+        return mosaicBitmap
     }
 
 
@@ -191,7 +198,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         }
     }
 
-    private fun contrastFilter(imageBitmap: Bitmap, contrast: Int) {
+    private fun contrastFilter(imageBitmap: Bitmap, contrast: Int) : Bitmap {
         val factor: Float = (259 * (contrast.toFloat() + 255)) / (255 * (259 - contrast.toFloat()))
 
         val width = imageBitmap.width
@@ -217,9 +224,10 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         contrastBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
 
         imageView.setImageBitmap(contrastBitmap)
+        return contrastBitmap
     }
 
-    private fun medianFilter(imageBitmap: Bitmap, windowSize: Int) {
+    private fun medianFilter(imageBitmap: Bitmap, windowSize: Int) : Bitmap {
         val width = imageBitmap.width
         val height = imageBitmap.height
         val pixels = IntArray(width * height)
@@ -254,9 +262,10 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         medianBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
 
         imageView.setImageBitmap(medianBitmap)
+        return medianBitmap
     }
 
-    private fun gaussFilter(imageBitmap: Bitmap, radius:Int) {
+    private fun gaussFilter(imageBitmap: Bitmap, radius:Int) : Bitmap {
         val width = imageBitmap.width
         val height = imageBitmap.height
         val pixels = IntArray(width * height)
@@ -302,5 +311,6 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         gaussBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
 
         imageView.setImageBitmap(gaussBitmap)
+        return gaussBitmap
     }
 }

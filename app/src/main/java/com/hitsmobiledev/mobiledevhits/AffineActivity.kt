@@ -1,6 +1,7 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.content.ContentValues
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -75,7 +76,11 @@ class AffineActivity : BaseFiltersActivity() {
 
         val saveChangesButton: ImageButton = findViewById(R.id.button_save_changes)
         saveChangesButton.setOnClickListener {
-            saveChanges(currentBitmap)
+            val newUri = saveBitmapToCache(this, currentBitmap)
+            val intent = Intent(this@AffineActivity, ChooseFilterActivity::class.java)
+            intent.putExtra("currentPhoto", newUri)
+            deleteFileFromCache(imageUri)
+            this@AffineActivity.startActivity(intent)
         }
 
         val returnToFiltersButton: ImageButton = findViewById(R.id.button_undo)
@@ -199,34 +204,6 @@ class AffineActivity : BaseFiltersActivity() {
             rightBorder = imageView.right
         }
     }
-
-    private fun saveChanges(currentBitmap: Bitmap) {
-        val filename = "${System.currentTimeMillis()}.jpg"
-        val fos: OutputStream?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = contentResolver
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-            }
-            val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            fos = imageUri?.let { resolver.openOutputStream(it) }
-        } else {
-            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val image = File(imagesDir, filename)
-            fos = FileOutputStream(image)
-        }
-
-        fos.use {
-            if (it != null) {
-                currentBitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
-            }
-        }
-
-        Toast.makeText(this, "Изображение сохранено", Toast.LENGTH_SHORT).show()
-    }
-
     private fun setStartPoints(currentBitmap: Bitmap) {
         edit(startPoints,currentBitmap)
         imageView.setOnTouchListener { _, event ->
