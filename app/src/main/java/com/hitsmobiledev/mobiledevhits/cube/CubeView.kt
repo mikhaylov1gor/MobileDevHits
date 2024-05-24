@@ -13,7 +13,7 @@ import Cube.*
 import android.annotation.SuppressLint
 import com.hitsmobiledev.mobiledevhits.R
 
-class CubeView (
+class CubeView(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -23,9 +23,9 @@ class CubeView (
     private val paint = Paint()
     private var cumulativeRotationX: Float = 0f
     private var cumulativeRotationY: Float = 0f
-    private var scaleFactor: Float  = 1f
-    private var previousX: Float  = 0f
-    private var previousY: Float  = 0f
+    private var scaleFactor: Float = 1f
+    private var previousX: Float = 0f
+    private var previousY: Float = 0f
 
     @SuppressLint("ResourceType")
     private val colors = listOf(
@@ -73,10 +73,10 @@ class CubeView (
                     face.numberInPoints[0].x * scaleFactor + width / 2,
                     face.numberInPoints[0].y * scaleFactor + height / 2
                 )
-                for (point in face.numberInPoints){
+                for (point in face.numberInPoints) {
                     numberPath.lineTo(
-                        point.x * scaleFactor + width  / 2,
-                        point.y * scaleFactor + height  / 2
+                        point.x * scaleFactor + width / 2,
+                        point.y * scaleFactor + height / 2
                     )
                 }
 
@@ -89,9 +89,9 @@ class CubeView (
         }
     }
 
-    private fun calculateCenterZ(vertices: List<Point>) : Float{
+    private fun calculateCenterZ(vertices: List<Point>): Float {
         var result = 0f
-        for (vertex in vertices){
+        for (vertex in vertices) {
             result += vertex.z
         }
         result *= scaleFactor

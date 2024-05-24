@@ -46,6 +46,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
                 deleteFileFromCache(imageUri)
             }
             this@ColorCorrectionActivity.startActivity(intent)
+            finish()
         }
 
         val returnToFiltersButton: ImageButton = findViewById(R.id.button_redu)
@@ -144,7 +145,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         return negativeBitmap
     }
 
-    private fun mosaicFilter(imageBitmap: Bitmap, blockSize: Int) : Bitmap {
+    private fun mosaicFilter(imageBitmap: Bitmap, blockSize: Int): Bitmap {
         val width = imageBitmap.width
         val height = imageBitmap.height
 
@@ -198,7 +199,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         }
     }
 
-    private fun contrastFilter(imageBitmap: Bitmap, contrast: Int) : Bitmap {
+    private fun contrastFilter(imageBitmap: Bitmap, contrast: Int): Bitmap {
         val factor: Float = (259 * (contrast.toFloat() + 255)) / (255 * (259 - contrast.toFloat()))
 
         val width = imageBitmap.width
@@ -227,7 +228,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         return contrastBitmap
     }
 
-    private fun medianFilter(imageBitmap: Bitmap, windowSize: Int) : Bitmap {
+    private fun medianFilter(imageBitmap: Bitmap, windowSize: Int): Bitmap {
         val width = imageBitmap.width
         val height = imageBitmap.height
         val pixels = IntArray(width * height)
@@ -265,7 +266,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
         return medianBitmap
     }
 
-    private fun gaussFilter(imageBitmap: Bitmap, radius:Int) : Bitmap {
+    private fun gaussFilter(imageBitmap: Bitmap, radius: Int): Bitmap {
         val width = imageBitmap.width
         val height = imageBitmap.height
         val pixels = IntArray(width * height)
@@ -282,8 +283,8 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
 
         imageBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
 
-        for (y in 0 until height){
-            for (x in 0 until width){
+        for (y in 0 until height) {
+            for (x in 0 until width) {
                 var sum = 0.0f
                 var sumRed = 0.0f
                 var sumGreen = 0.0f
@@ -303,7 +304,12 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
                     }
                 }
 
-                pixels[y * width + x] = Color.argb(255, (sumRed / sum).toInt(), (sumGreen / sum).toInt(), (sumBlue / sum).toInt())
+                pixels[y * width + x] = Color.argb(
+                    255,
+                    (sumRed / sum).toInt(),
+                    (sumGreen / sum).toInt(),
+                    (sumBlue / sum).toInt()
+                )
             }
         }
 

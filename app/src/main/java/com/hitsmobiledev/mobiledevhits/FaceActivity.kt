@@ -47,7 +47,7 @@ class FaceActivity : BaseFiltersActivity() {
 
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
-        var resultBitmap : Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
+        var resultBitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
 
         detectButton.setOnClickListener {
             val cascadeFile = getCascadeFile(resources)
@@ -103,6 +103,7 @@ class FaceActivity : BaseFiltersActivity() {
                 deleteFileFromCache(imageUri)
             }
             this@FaceActivity.startActivity(intent)
+            finish()
         }
     }
 

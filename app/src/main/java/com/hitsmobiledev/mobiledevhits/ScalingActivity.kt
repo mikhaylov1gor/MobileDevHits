@@ -83,12 +83,14 @@ class ScalingActivity : BaseFiltersActivity() {
                     var newPixels: IntArray
                     imageBitmap.getPixels(prevPixels, 0, width, 0, 0, width, height)
                     if (scaleValue < 1) {
-                        newPixels = trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
+                        newPixels =
+                            trilinearFiltering(prevPixels, width, height, newWidth, newHeight)
                     } else {
                         newPixels = bilinearFiltering(prevPixels, newWidth, newHeight)
                     }
 
-                    val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+                    val newBitmap =
+                        Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
                     newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
                     imageBitmap = newBitmap
                     imageView.setImageBitmap(newBitmap)
@@ -105,11 +107,16 @@ class ScalingActivity : BaseFiltersActivity() {
                 deleteFileFromCache(imageUri)
             }
             this@ScalingActivity.startActivity(intent)
+            finish()
         }
     }
 
 
-    private suspend fun bilinearFiltering(prevPixels: IntArray, newWidth: Int, newHeight: Int): IntArray = withContext(Dispatchers.Default) {
+    private suspend fun bilinearFiltering(
+        prevPixels: IntArray,
+        newWidth: Int,
+        newHeight: Int
+    ): IntArray = withContext(Dispatchers.Default) {
         var newPixels = IntArray(newWidth * newHeight)
         val width = imageBitmap.width
         val height = imageBitmap.height
@@ -138,14 +145,22 @@ class ScalingActivity : BaseFiltersActivity() {
                     val thirdPixel = prevPixels[(tempY + 1) * width + tempX + 1]
                     val fourthPixel = prevPixels[(tempY + 1) * width + tempX]
 
-                    var red = firstCoeff * Color.red(firstPixel) + secondCoeff * Color.red(secondPixel)
+                    var red =
+                        firstCoeff * Color.red(firstPixel) + secondCoeff * Color.red(secondPixel)
                     red += thirdCoeff * Color.red(thirdPixel) + fourthCoeff * Color.red(fourthPixel)
-                    var green = firstCoeff * Color.green(firstPixel) + secondCoeff * Color.green(secondPixel)
-                    green += thirdCoeff * Color.green(thirdPixel) + fourthCoeff * Color.green(fourthPixel)
-                    var blue = firstCoeff * Color.blue(firstPixel) + secondCoeff * Color.blue(secondPixel)
-                    blue += thirdCoeff * Color.blue(thirdPixel) + fourthCoeff * Color.blue(fourthPixel)
+                    var green =
+                        firstCoeff * Color.green(firstPixel) + secondCoeff * Color.green(secondPixel)
+                    green += thirdCoeff * Color.green(thirdPixel) + fourthCoeff * Color.green(
+                        fourthPixel
+                    )
+                    var blue =
+                        firstCoeff * Color.blue(firstPixel) + secondCoeff * Color.blue(secondPixel)
+                    blue += thirdCoeff * Color.blue(thirdPixel) + fourthCoeff * Color.blue(
+                        fourthPixel
+                    )
 
-                    newPixels[y * newWidth + x] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+                    newPixels[y * newWidth + x] =
+                        Color.rgb(red.toInt(), green.toInt(), blue.toInt())
                 }
             }
             jobs.add(job)
@@ -154,7 +169,13 @@ class ScalingActivity : BaseFiltersActivity() {
         return@withContext newPixels
     }
 
-    private suspend fun trilinearFiltering(prevPixels: IntArray, width: Int, height: Int, newWidth: Int, newHeight: Int): IntArray = withContext(Dispatchers.Main) {
+    private suspend fun trilinearFiltering(
+        prevPixels: IntArray,
+        width: Int,
+        height: Int,
+        newWidth: Int,
+        newHeight: Int
+    ): IntArray = withContext(Dispatchers.Main) {
         var newPixels = IntArray(newWidth * newHeight)
         var firstWidth = width
         var firstHeight = height;
@@ -163,7 +184,11 @@ class ScalingActivity : BaseFiltersActivity() {
             firstWidth = (width.toFloat() / scaleValue).toInt()
             firstHeight = (height.toFloat() / scaleValue).toInt()
             runBlocking {
-                firstLevelPixels = blur(bilinearFiltering(prevPixels, firstWidth, firstHeight), firstWidth, firstHeight)
+                firstLevelPixels = blur(
+                    bilinearFiltering(prevPixels, firstWidth, firstHeight),
+                    firstWidth,
+                    firstHeight
+                )
             }
         }
 
@@ -206,9 +231,12 @@ class ScalingActivity : BaseFiltersActivity() {
 
                     val weight = (firstX % 1) * (firstY % 1)
 
-                    val red = (Color.red(firstPixel) * (1 - weight) + Color.red(secondPixel) * weight).toInt()
-                    val green = (Color.green(firstPixel) * (1 - weight) + Color.green(secondPixel) * weight).toInt()
-                    val blue = (Color.blue(firstPixel) * (1 - weight) + Color.blue(secondPixel) * weight).toInt()
+                    val red =
+                        (Color.red(firstPixel) * (1 - weight) + Color.red(secondPixel) * weight).toInt()
+                    val green =
+                        (Color.green(firstPixel) * (1 - weight) + Color.green(secondPixel) * weight).toInt()
+                    val blue =
+                        (Color.blue(firstPixel) * (1 - weight) + Color.blue(secondPixel) * weight).toInt()
 
                     newPixels[y * newWidth + x] = Color.rgb(red, green, blue)
                 }
@@ -219,7 +247,13 @@ class ScalingActivity : BaseFiltersActivity() {
         return@withContext newPixels
     }
 
-    private fun getInterpolatedColor(pixels: IntArray, coordX: Float, coordY: Float, width: Int, height: Int): Int {
+    private fun getInterpolatedColor(
+        pixels: IntArray,
+        coordX: Float,
+        coordY: Float,
+        width: Int,
+        height: Int
+    ): Int {
         var tempX = coordX.toInt().coerceIn(0, width - 2)
         var tempY = coordY.toInt().coerceIn(0, height - 2)
 
@@ -246,52 +280,53 @@ class ScalingActivity : BaseFiltersActivity() {
         return Color.rgb(red.toInt(), green.toInt(), blue.toInt())
     }
 
-    private fun calculateGaussianWeight(x : Int, sigma : Double) : Double{
+    private fun calculateGaussianWeight(x: Int, sigma: Double): Double {
         return (1.0 / (2.0 * Math.PI * sigma * sigma)) * exp(-(x * x) / (2.0 * sigma * sigma));
     }
 
-    private suspend fun blur(pixels: IntArray, width: Int, height: Int) : IntArray = withContext(Dispatchers.Default) {
-        var newPixels = IntArray(width * height);
-        var radius = 4;
-        var sigma = 1.0 + 960.0 * 720.0 / width.toFloat() / height.toFloat();
-        val jobs = mutableListOf<Job>()
-        for (x in 0 until width){
-            val job = launch {
-                for (y in 0 until height) {
-                    var red = 0.0;
-                    var green = 0.0;
-                    var blue = 0.0;
-                    var weightSum = 0.0;
-                    var coord = y * width + x;
+    private suspend fun blur(pixels: IntArray, width: Int, height: Int): IntArray =
+        withContext(Dispatchers.Default) {
+            var newPixels = IntArray(width * height);
+            var radius = 4;
+            var sigma = 1.0 + 960.0 * 720.0 / width.toFloat() / height.toFloat();
+            val jobs = mutableListOf<Job>()
+            for (x in 0 until width) {
+                val job = launch {
+                    for (y in 0 until height) {
+                        var red = 0.0;
+                        var green = 0.0;
+                        var blue = 0.0;
+                        var weightSum = 0.0;
+                        var coord = y * width + x;
 
-                    for (i in -radius..radius) {
-                        for (j in -radius..radius) {
-                            val newX = x + i;
-                            val newY = y + j;
+                        for (i in -radius..radius) {
+                            for (j in -radius..radius) {
+                                val newX = x + i;
+                                val newY = y + j;
 
-                            if (newX in 0 until width && newY in 0 until height) {
-                                var weight =
-                                    calculateGaussianWeight(i, sigma) * calculateGaussianWeight(
-                                        j,
-                                        sigma
-                                    )
-                                red += Color.red(pixels[coord]).toDouble() * weight;
-                                green += Color.green(pixels[coord]).toDouble() * weight;
-                                blue += Color.blue(pixels[coord]).toDouble() * weight;
-                                weightSum += weight;
+                                if (newX in 0 until width && newY in 0 until height) {
+                                    var weight =
+                                        calculateGaussianWeight(i, sigma) * calculateGaussianWeight(
+                                            j,
+                                            sigma
+                                        )
+                                    red += Color.red(pixels[coord]).toDouble() * weight;
+                                    green += Color.green(pixels[coord]).toDouble() * weight;
+                                    blue += Color.blue(pixels[coord]).toDouble() * weight;
+                                    weightSum += weight;
+                                }
                             }
                         }
-                    }
-                    red /= weightSum;
-                    green /= weightSum;
-                    blue /= weightSum;
+                        red /= weightSum;
+                        green /= weightSum;
+                        blue /= weightSum;
 
-                    newPixels[coord] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+                        newPixels[coord] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
+                    }
                 }
+                jobs.add(job)
             }
-            jobs.add(job)
+            jobs.forEach { it.join() }
+            return@withContext newPixels;
         }
-        jobs.forEach { it.join() }
-        return@withContext newPixels;
-    }
 }

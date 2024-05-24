@@ -154,39 +154,4 @@
             android:layout_width="254dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
-<!--    <com.google.android.material.slider.Slider-->
-<!--        android:id="@+id/radius_slider"-->
-<!--        android:layout_width="222dp"-->
-<!--        android:layout_height="49dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        android:stepSize="1"-->
-<!--        android:value="12"-->
-<!--        android:valueFrom="0"-->
-
-<!--        android:valueTo="80"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.497"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/treshold_slider"-->
-<!--        tools:ignore="MissingConstraints" />-->
-
-<!--    <com.google.android.material.slider.Slider-->
-<!--        android:id="@+id/amount_slider"-->
-<!--        android:layout_width="222dp"-->
-<!--        android:layout_height="49dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        android:stepSize="0.1"-->
-<!--        android:value="0.4"-->
-<!--        android:valueFrom="0.0"-->
-
-<!--        android:valueTo="2.0"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.502"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/radius_slider"-->
-<!--        tools:ignore="MissingConstraints" />-->
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

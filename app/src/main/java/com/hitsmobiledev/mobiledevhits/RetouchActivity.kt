@@ -86,15 +86,16 @@ class RetouchActivity : BaseFiltersActivity() {
                 deleteFileFromCache(imageUri)
             }
             this@RetouchActivity.startActivity(intent)
+            finish()
         }
     }
 
-    private fun calculateBorders(){
+    private fun calculateBorders() {
         val drawable = imageView.drawable
         val intrinsicWidth = drawable.intrinsicWidth
         val intrinsicHeight = drawable.intrinsicHeight
 
-        if (intrinsicWidth < intrinsicHeight){
+        if (intrinsicWidth < intrinsicHeight) {
             val top = imageView.top
             val bottom = imageView.bottom
             scaling = (bottom - top).toFloat() / intrinsicHeight.toFloat()
@@ -116,15 +117,15 @@ class RetouchActivity : BaseFiltersActivity() {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_MOVE || event.action == MotionEvent.ACTION_DOWN){
-            if (scaling == 0f){
+        if (event.action == MotionEvent.ACTION_MOVE || event.action == MotionEvent.ACTION_DOWN) {
+            if (scaling == 0f) {
                 calculateBorders()
             }
 
             var x = event.x
             var y = event.y
 
-            if (topBorder <= y && y <= bottomBorder && leftBorder <= x && x <= rightBorder){
+            if (topBorder <= y && y <= bottomBorder && leftBorder <= x && x <= rightBorder) {
                 x -= leftBorder
                 y -= topBorder
                 var newX = (x / scaling).toInt()
@@ -138,7 +139,7 @@ class RetouchActivity : BaseFiltersActivity() {
             }
         }
 
-        if (event.action == MotionEvent.ACTION_UP){
+        if (event.action == MotionEvent.ACTION_UP) {
             while (!queue.isEmpty()) {
                 val point = queue.poll()
                 if (point != null) {
@@ -152,7 +153,7 @@ class RetouchActivity : BaseFiltersActivity() {
 
     private fun retouching(x: Int, y: Int) {
         val brushSizeInt = brushSize.toInt()
-        val width = 1 + min(x, brushSizeInt) + min(imageBitmap.width - x - 1 , brushSizeInt)
+        val width = 1 + min(x, brushSizeInt) + min(imageBitmap.width - x - 1, brushSizeInt)
         val height = 1 + min(y, brushSizeInt) + min(imageBitmap.height - y - 1, brushSizeInt)
 
         val pixels = IntArray(width * height)
@@ -198,9 +199,12 @@ class RetouchActivity : BaseFiltersActivity() {
                     var newCoeff = coefficient * (1f - dist / brushSizeInt.toFloat())
                     val i = (pixelY - startY) * width + pixelX - startX
                     var pixel = pixels[i]
-                    var red = ((newCoeff * avgRed) + ((1.0 - newCoeff) * Color.red(pixel).toFloat()))
-                    var green = ((newCoeff * avgGreen) + ((1.0 - newCoeff) * Color.green(pixel).toFloat()))
-                    var blue = ((newCoeff * avgBlue) + ((1.0 - newCoeff) * Color.blue(pixel).toFloat()))
+                    var red =
+                        ((newCoeff * avgRed) + ((1.0 - newCoeff) * Color.red(pixel).toFloat()))
+                    var green =
+                        ((newCoeff * avgGreen) + ((1.0 - newCoeff) * Color.green(pixel).toFloat()))
+                    var blue =
+                        ((newCoeff * avgBlue) + ((1.0 - newCoeff) * Color.blue(pixel).toFloat()))
                     pixels[i] = Color.rgb(red.toInt(), green.toInt(), blue.toInt())
                 }
             }

@@ -14,31 +14,31 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 
-class Interpolator(points: MutableList<Point>){
+class Interpolator(points: MutableList<Point>) {
 
     private val n = points.size - 1
-    public val A : FloatArray = FloatArray(n + 1)
-    public val B : FloatArray = FloatArray(n)
-    public val C : FloatArray = FloatArray(n + 1)
-    public val D : FloatArray = FloatArray(n)
+    public val A: FloatArray = FloatArray(n + 1)
+    public val B: FloatArray = FloatArray(n)
+    public val C: FloatArray = FloatArray(n + 1)
+    public val D: FloatArray = FloatArray(n)
 
-    private val h : FloatArray = FloatArray(n)
-    private val cProblemValue : FloatArray = FloatArray(n)
+    private val h: FloatArray = FloatArray(n)
+    private val cProblemValue: FloatArray = FloatArray(n)
 
-    private val s1 : FloatArray = FloatArray(n+1)
-    private val s2 : FloatArray = FloatArray(n+1)
-    private val s3 : FloatArray = FloatArray(n+1)
+    private val s1: FloatArray = FloatArray(n + 1)
+    private val s2: FloatArray = FloatArray(n + 1)
+    private val s3: FloatArray = FloatArray(n + 1)
 
     init {
 
-        for (i in 0 until points.size){
+        for (i in 0 until points.size) {
             A[i] = points[i].y.toFloat()
         }
 
-        for (i in 0 until n){
-            h[i] = (points[i+1].x - points[i].x).toFloat()
+        for (i in 0 until n) {
+            h[i] = (points[i + 1].x - points[i].x).toFloat()
 
-            if (i > 0){
+            if (i > 0) {
                 cProblemValue[i] = 3 * (A[i + 1] - A[i]) / h[i] - 3 * (A[i] - A[i - 1]) / h[i - 1];
             }
         }
@@ -47,18 +47,19 @@ class Interpolator(points: MutableList<Point>){
         s2[0] = 0f
         s3[0] = 0f
 
-        for (i in 1 until n){
-            s1[i] = 2 * (points[i+1].x.toFloat() - points[i-1].x.toFloat()) - h[i-1] * s2[i-1]
+        for (i in 1 until n) {
+            s1[i] =
+                2 * (points[i + 1].x.toFloat() - points[i - 1].x.toFloat()) - h[i - 1] * s2[i - 1]
             s2[i] = h[i] / s1[i]
-            s3[i] = (cProblemValue[i] - h[i-1] * s3[i-1]) / s1[i]
+            s3[i] = (cProblemValue[i] - h[i - 1] * s3[i - 1]) / s1[i]
         }
 
         s1[n] = 1f
         s2[n] = 0f
         s3[n] = 0f
 
-        for (i in n - 1 downTo  0){
-            C[i] = s3[i] - s2[i] * C[i+1]
+        for (i in n - 1 downTo 0) {
+            C[i] = s3[i] - s2[i] * C[i + 1]
             B[i] = (A[i + 1] - A[i]) / h[i] - h[i] * (C[i + 1] + 2 * C[i]) / 3
             D[i] = (C[i + 1] - C[i]) / (3 * h[i])
         }
@@ -83,7 +84,6 @@ class VectorEditActivity : BaseFiltersActivity() {
         imageView.setImageBitmap(imageBitmap)
 
         var currentBitmap: Bitmap = imageBitmap
-
 
         val returnToFiltersButton: ImageButton = findViewById(R.id.button_redu)
         returnToFiltersButton.setOnClickListener {
@@ -119,6 +119,7 @@ class VectorEditActivity : BaseFiltersActivity() {
                 deleteFileFromCache(imageUri)
             }
             this@VectorEditActivity.startActivity(intent)
+            finish()
         }
     }
 
@@ -126,6 +127,7 @@ class VectorEditActivity : BaseFiltersActivity() {
         val intent = Intent(this@VectorEditActivity, ChooseFilterActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         this@VectorEditActivity.startActivity(intent)
+        finish()
     }
 
     private fun saveChanges(currentBitmap: Bitmap) {
@@ -177,7 +179,7 @@ class VectorEditActivity : BaseFiltersActivity() {
         for (i in 0 until points.size - 1) {
             var currentX = points[i].x
 
-            if (currentX < points[i+1].x) {
+            if (currentX < points[i + 1].x) {
                 while (currentX < points[i + 1].x) {
                     val currentY =
                         interpolator.A[i] + interpolator.B[i] * (currentX - points[i].x) + interpolator.C[i] * (currentX - points[i].x) * (currentX - points[i].x) + interpolator.D[i] * (currentX - points[i].x) * (currentX - points[i].x) * (currentX - points[i].x)
@@ -186,7 +188,7 @@ class VectorEditActivity : BaseFiltersActivity() {
                 }
             }
 
-            if (currentX > points[i+1].x) {
+            if (currentX > points[i + 1].x) {
                 while (currentX > points[i + 1].x) {
                     val currentY =
                         interpolator.A[i] + interpolator.B[i] * (currentX - points[i].x) + interpolator.C[i] * (currentX - points[i].x) * (currentX - points[i].x) + interpolator.D[i] * (currentX - points[i].x) * (currentX - points[i].x) * (currentX - points[i].x)

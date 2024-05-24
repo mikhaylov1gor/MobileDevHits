@@ -25,84 +25,75 @@ open class BaseFiltersActivity : AppCompatActivity() {
 
         imageUri = intent.getParcelableExtra("currentPhoto")!!
 
-
         supportFragmentManager.beginTransaction()
             .replace(android.R.id.content, NavigateFragment())
             .commit()
     }
 
-    // КНОПКА ДЛЯ ВЛАДА
-//    val saveButton: ImageButton = findViewById(R.id.button_save)
-//    saveButton.setOnClickListener {
-//        saveChanges(currentBitmap)
-//    }
-
-    fun chooseRotateFilter(view: View){
+    fun chooseRotateFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, RotateActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseColorFilter(view: View){
+    fun chooseColorFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, ColorCorrectionActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseAffineFilter(view: View){
+    fun chooseAffineFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, AffineActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseBlurFilter(view: View){
+    fun chooseBlurFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, BlurActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseFaceFilter(view: View){
+    fun chooseFaceFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, FaceActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseDiceFilter(view: View){
+    fun chooseDiceFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, CubeActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseRetouchFilter(view: View){
+    fun chooseRetouchFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, RetouchActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseVectorEditFilter(view: View){
+    fun chooseVectorEditFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, VectorEditActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun chooseScaleFilter(view: View){
+    fun chooseScaleFilter(view: View) {
         val intent = Intent(this@BaseFiltersActivity, ScalingActivity::class.java)
         intent.putExtra("currentPhoto", imageUri)
         startActivity(intent)
-        super.onStop()
+        finish()
     }
 
-    fun returnBack(view: View){
-        val intent = Intent(this@BaseFiltersActivity, MainActivity::class.java)
-        startActivity(intent)
-        super.onStop()
+    fun returnBack(view: View) {
+        finish()
     }
 }

@@ -41,7 +41,8 @@ class BlurActivity : BaseFiltersActivity() {
         imageView.setImageURI(imageUri)
 
         maskButton = findViewById(R.id.mask_button)
-        var finalBitmap : Bitmap = MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
+        var finalBitmap: Bitmap =
+            MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
         maskButton.setOnClickListener() {
             val bitmap =
                 MediaStore.Images.Media.getBitmap(this@BlurActivity.contentResolver, imageUri)
@@ -63,6 +64,7 @@ class BlurActivity : BaseFiltersActivity() {
                 deleteFileFromCache(imageUri)
             }
             this@BlurActivity.startActivity(intent)
+            finish()
         }
 
         val thresholdSeekBar = findViewById<SeekBar>(R.id.threshold_seek_bar)
@@ -117,7 +119,12 @@ class BlurActivity : BaseFiltersActivity() {
         })
     }
 
-    private suspend fun gaussFilter(pixels: IntArray, width: Int, height: Int, radius: Int): IntArray = coroutineScope {
+    private suspend fun gaussFilter(
+        pixels: IntArray,
+        width: Int,
+        height: Int,
+        radius: Int
+    ): IntArray = coroutineScope {
         val sigma = radius.toFloat() / 2
         val windowSize = radius
         val window = FloatArray(2 * windowSize + 1)
@@ -180,9 +187,12 @@ class BlurActivity : BaseFiltersActivity() {
             val maskColor = mask[i]
 
             val newAlpha = Color.alpha(originalColor)
-            val newRed = (Color.red(originalColor) + amount * Color.red(maskColor)).toInt().coerceIn(0, 255)
-            val newGreen = (Color.green(originalColor) + amount * Color.green(maskColor)).toInt().coerceIn(0, 255)
-            val newBlue = (Color.blue(originalColor) + amount * Color.blue(maskColor)).toInt().coerceIn(0, 255)
+            val newRed =
+                (Color.red(originalColor) + amount * Color.red(maskColor)).toInt().coerceIn(0, 255)
+            val newGreen = (Color.green(originalColor) + amount * Color.green(maskColor)).toInt()
+                .coerceIn(0, 255)
+            val newBlue = (Color.blue(originalColor) + amount * Color.blue(maskColor)).toInt()
+                .coerceIn(0, 255)
 
             outputPixels[i] = Color.argb(newAlpha, newRed, newGreen, newBlue)
         }
@@ -193,7 +203,11 @@ class BlurActivity : BaseFiltersActivity() {
         return outputBitmap
     }
 
-    private fun getMask(blurredPixels: IntArray, originalPixels: IntArray, treshold: Int): IntArray {
+    private fun getMask(
+        blurredPixels: IntArray,
+        originalPixels: IntArray,
+        treshold: Int
+    ): IntArray {
         val mask = IntArray(originalPixels.size)
 
         for (i in originalPixels.indices) {

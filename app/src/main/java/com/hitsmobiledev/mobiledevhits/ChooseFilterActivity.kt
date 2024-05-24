@@ -1,5 +1,6 @@
 package com.hitsmobiledev.mobiledevhits
 
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -31,15 +32,21 @@ class ChooseFilterActivity : BaseFiltersActivity() {
         val imageUri = intent.getParcelableExtra<Uri>("currentPhoto")
         imageView.setImageURI(imageUri)
 
-        val saveButton : ImageButton = findViewById(R.id.button_save)
+        val saveButton: ImageButton = findViewById(R.id.button_save)
         saveButton.setOnClickListener {
-            saveImageToGallery(MediaStore.Images.Media.getBitmap(
-                this@ChooseFilterActivity.contentResolver,
-                imageUri)
+            saveImageToGallery(
+                MediaStore.Images.Media.getBitmap(
+                    this@ChooseFilterActivity.contentResolver,
+                    imageUri
+                )
             )
-            Toast.makeText(this, "Image saved!", Toast.LENGTH_SHORT).show()
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(R.string.image_saved)
+            builder.setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            builder.show()
         }
-
     }
 
     private fun saveImageToGallery(bitmap: Bitmap) {
@@ -52,10 +59,12 @@ class ChooseFilterActivity : BaseFiltersActivity() {
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                 put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
             }
-            val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            val imageUri =
+                resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
             fos = imageUri?.let { resolver.openOutputStream(it) }
         } else {
-            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val imagesDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
             val image = File(imagesDir, filename)
             fos = FileOutputStream(image)
         }

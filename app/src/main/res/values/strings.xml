@@ -9,7 +9,6 @@
     <string name="blur">BLUR</string>
     <string name="affine">AFFINE</string>
     <string name="cube">CUBE</string>
-
     <string name="button_return_back">button_return_back</string>
     <string name="photo" />
     <string name="button_second_filter" />
@@ -19,17 +18,16 @@
     <string name="button_fourth_filter" />
     <string name="button_fifth_filter" />
     <string name="button_sixth_filter" />
-
     <string name="button_return_from_colorfilter_to_choosetools" />
     <string name="button_save_color_changes" />
     <string name="currentphoto">currentPhoto</string>
     <string name="button_return">button_return</string>
     <string name="colorfilterphoto">ColorFilterPhoto</string>
     <string name="button_back_to_filters">button_back_to_filters</string>
-
     <string name="threshold">Threshold</string>
     <string name="radius">Radius</string>
     <string name="amount">Amount</string>
+    <string name="image_saved">Successful! Edited image was saved.</string>
     <string name="button_edit" />
     <string name="button_save_vector_edit_changes" />
     <string name="currentPhoto" />

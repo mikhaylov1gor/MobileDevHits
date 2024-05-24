@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val cameraButton: ImageButton = findViewById(R.id.CameraButton)
-        cameraButton.setOnClickListener{
+        cameraButton.setOnClickListener {
             if (checkCameraPermission()) {
                 openCamera()
             } else {
@@ -57,22 +57,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        pickImagesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                val data = result.data
-                if (data?.clipData != null) {
-                    val clipData = data.clipData
-                    for (i in 0 until clipData!!.itemCount) {
-                        val uri = clipData.getItemAt(i).uri
+        pickImagesLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                    val data = result.data
+                    if (data?.clipData != null) {
+                        val clipData = data.clipData
+                        for (i in 0 until clipData!!.itemCount) {
+                            val uri = clipData.getItemAt(i).uri
+                            selectedImages.add(uri)
+                        }
+                    } else if (data?.data != null) {
+                        val uri = data.data!!
                         selectedImages.add(uri)
                     }
-                } else if (data?.data != null) {
-                    val uri = data.data!!
-                    selectedImages.add(uri)
+                    displayGalleryPhotos()
                 }
-                displayGalleryPhotos()
             }
-        }
     }
 
     fun openCamera() {
@@ -119,7 +120,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        val imageUri =
+            contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
         imageUri?.let { uri ->
             contentResolver.openOutputStream(uri)?.use { outputStream ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
