@@ -1,11 +1,8 @@
 <resources>
     <string name="app_name">mobile dev hits</string>
-    <string name="rotate_button_text">Rotate</string>
-    <string name="rotate">TODO</string>
+    <string name="rotate">ROTATE</string>
     <string name="color">COLOR</string>
     <string name="scale">TODO</string>
-    <string name="scalling_button_name">Scale</string>
-    <string name="detect_faces">Detect</string>
     <string name="face">TODO</string>
     <string name="vector_edit">TODO</string>
     <string name="retouch">TODO</string>
@@ -31,8 +28,7 @@
     <string name="button_save_vector_edit_changes" />
     <string name="currentPhoto" />
     <string name="button_save_affine_changes" />
-    <string name="brush_size">Brush size</string>
-    <string name="coefficient">Coefficient</string>
-    <string name="angle_rotation">Angle</string>
-    <string name="button_save">save image</string>
+    <string name="rotate_button_text" />
+    <string name="button_redu" />
+    <string name="button_undo" />
 </resources>

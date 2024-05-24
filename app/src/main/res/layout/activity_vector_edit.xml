@@ -31,7 +31,7 @@
         app:srcCompat="@drawable/check" />
 
     <ImageButton
-        android:id="@+id/button_back_to_filters"
+        android:id="@+id/button_redu"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="76dp"

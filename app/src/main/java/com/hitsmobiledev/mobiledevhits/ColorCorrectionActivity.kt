@@ -42,7 +42,7 @@ class ColorCorrectionActivity : BaseFiltersActivity() {
             saveChanges(currentBitmap)
         }
 
-        val returnToFiltersButton: ImageButton = findViewById(R.id.button_back_to_filters)
+        val returnToFiltersButton: ImageButton = findViewById(R.id.button_redu)
         returnToFiltersButton.setOnClickListener {
             returnToFilters()
         }

@@ -1,13 +1,11 @@
 package com.hitsmobiledev.mobiledevhits
 
 import android.content.ContentValues
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,18 +17,17 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.roundToInt
 
 class AffineActivity : BaseFiltersActivity() {
     private lateinit var imageView: ImageView
     private lateinit var imageBitmap: Bitmap
     private lateinit var imageUri: Uri
-    private var isChanged = false
+    private lateinit var currentBitmap: Bitmap
+    private var conditions = mutableListOf<Bitmap>()
     private var startPoints = mutableListOf<Point>()
     private var finishPoints = mutableListOf<Point>()
 
@@ -39,15 +36,28 @@ class AffineActivity : BaseFiltersActivity() {
     private var leftBorder = 0
     private var rightBorder = 0
     private var scaling = 1f
+    private var scale = 1f
+    private var currentIndex = 0
 
-    private var a = 0f
-    private var b = 0f
-    private var tx = 0f
+    private var a = 1f
+    private var b = 1f
+    private var tx = 1f
 
-    private var c = 0f
-    private var d = 0f
-    private val filterViewModel : filterViewModel by viewModels()
-    private var ty = 0f
+    private var c = 1f
+    private var d = 1f
+    private var ty = 1f
+
+    private var invA = 1f
+    private var invB = 1f
+    private var invTx = 1f
+
+    private var invC = 1f
+    private var invD = 1f
+    private var invTy = 1f
+
+
+    private var minX = 9999
+    private var minY = -9999
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,14 +69,24 @@ class AffineActivity : BaseFiltersActivity() {
         imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
         imageView.setImageBitmap(imageBitmap)
 
-        var currentBitmap: Bitmap = imageBitmap
+        currentBitmap = imageBitmap
+        conditions.add(currentBitmap)
         calculateBorders()
 
-        val returnToFiltersButton: ImageButton = findViewById(R.id.button_back_to_filters)
+        val saveChangesButton: ImageButton = findViewById(R.id.button_save_affine_changes)
+        saveChangesButton.setOnClickListener {
+            saveChanges(currentBitmap)
+        }
+
+        val returnToFiltersButton: ImageButton = findViewById(R.id.button_undo)
         returnToFiltersButton.setOnClickListener {
             returnToFilters()
         }
 
+        val reduButton: ImageButton = findViewById(R.id.button_redu)
+        reduButton.setOnClickListener{
+            redu()
+        }
 
         val setStartPoints: Button = findViewById(R.id.button_start_points)
         setStartPoints.setOnClickListener {
@@ -81,22 +101,33 @@ class AffineActivity : BaseFiltersActivity() {
         val startTransform: Button = findViewById(R.id.button_confirm)
         startTransform.setOnClickListener {
             affineTransform(currentBitmap)
-            isChanged = true
         }
     }
 
     private fun returnToFilters() {
-        val intent = Intent(this@AffineActivity, ChooseFilterActivity::class.java)
-        intent.putExtra("currentPhoto", imageUri)
-        startActivity(intent)
+        if (currentIndex > 0) {
+            currentBitmap = conditions[currentIndex - 1]
+            imageView.setImageBitmap(currentBitmap)
+            currentIndex--
+        }
     }
 
-    private fun calculateCoeffs(){
-        val detA = calculateMatrix(arrayOf(
+    private fun redu(){
+        if (currentIndex < conditions.size - 1){
+            currentBitmap = conditions[currentIndex + 1]
+            imageView.setImageBitmap(currentBitmap)
+            currentIndex++
+        }
+    }
+
+    private fun calculateCoeffs() {
+        val startMatrix = arrayOf(
             floatArrayOf(startPoints[0].x.toFloat(), startPoints[0].y.toFloat(), 1f),
             floatArrayOf(startPoints[1].x.toFloat(), startPoints[1].y.toFloat(), 1f),
             floatArrayOf(startPoints[2].x.toFloat(), startPoints[2].y.toFloat(), 1f)
-        ))
+        )
+
+        val detA = calculateMatrix(startMatrix)
 
         val detA1 = calculateMatrix(arrayOf(
             floatArrayOf(finishPoints[0].x.toFloat(), startPoints[0].y.toFloat(), 1f),
@@ -134,14 +165,15 @@ class AffineActivity : BaseFiltersActivity() {
             floatArrayOf(startPoints[2].x.toFloat(), startPoints[2].y.toFloat(), finishPoints[2].y.toFloat())
         ))
 
-         a = detA1 / detA
-         b = detA2 / detA
-         tx = detA3 / detA
+        a = detA1 / detA
+        b = detA2 / detA
+        tx = detA3 / detA
 
-         c = detB1 / detA
-         d = detB2 / detA
-         ty = detB3 / detA
+        c = detB1 / detA
+        d = detB2 / detA
+        ty = detB3 / detA
     }
+
     private fun calculateBorders(){
         val drawable = imageView.drawable
         val intrinsicWidth = drawable.intrinsicWidth
@@ -166,6 +198,33 @@ class AffineActivity : BaseFiltersActivity() {
             leftBorder = imageView.left
             rightBorder = imageView.right
         }
+    }
+
+    private fun saveChanges(currentBitmap: Bitmap) {
+        val filename = "${System.currentTimeMillis()}.jpg"
+        val fos: OutputStream?
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val resolver = contentResolver
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+            }
+            val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            fos = imageUri?.let { resolver.openOutputStream(it) }
+        } else {
+            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val image = File(imagesDir, filename)
+            fos = FileOutputStream(image)
+        }
+
+        fos.use {
+            if (it != null) {
+                currentBitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+            }
+        }
+
+        Toast.makeText(this, "Изображение сохранено", Toast.LENGTH_SHORT).show()
     }
 
     private fun setStartPoints(currentBitmap: Bitmap) {
@@ -244,68 +303,96 @@ class AffineActivity : BaseFiltersActivity() {
                 matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0])
     }
 
-    private fun calculateNewSize(): Pair<Int, Int> {
-        val distancesStart = listOf(
-            distance(startPoints[0], startPoints[1]),
-            distance(startPoints[1], startPoints[2]),
-            distance(startPoints[2], startPoints[0])
-        )
-
-        val distancesFinish = listOf(
-            distance(finishPoints[0], finishPoints[1]),
-            distance(finishPoints[1], finishPoints[2]),
-            distance(finishPoints[2], finishPoints[0])
-        )
-
-        val scale = (distancesFinish[0] / distancesStart[0] + distancesFinish[1] / distancesStart[1] + distancesFinish[2] / distancesStart[2]) / 3
+    private fun affineFunc(x: Int, y: Int): Point {
+        return Point((a * x + b * y + tx).toInt(), (c * x + d * y + ty).toInt())
+    }
+    private fun calculateNewSize(currentBitmap: Bitmap): Pair<Int, Int> {
+        val width = currentBitmap.width
+        val height = currentBitmap.height
 
 
-        val newWidth = (imageBitmap.width * scale).toInt()
-        val newHeight = (imageBitmap.height * scale).toInt()
+        var topLeft: Point = affineFunc(0,0)
+        var topRight: Point = affineFunc(width - 1, 0)
+        var bottomLeft:Point = affineFunc(0, height -1)
+        var bottomRight:Point = affineFunc(width -1, height -1)
+
+        minX = listOf(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x).minOrNull() ?: 0
+        minY = listOf(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y).minOrNull() ?: 0
+        val maxX = listOf(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x).maxOrNull() ?: 0
+        val maxY = listOf(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y).maxOrNull() ?: 0
+
+
+        val newWidth = maxX - minX
+        val newHeight = maxY - minY
 
         return Pair(newWidth, newHeight)
     }
 
+    private fun calculateInverseCoefficients() {
+        val det = a * d - b * c
+
+        invA = d / det
+        invB = -b / det
+        invC = -c / det
+        invD = a / det
+
+        invTx = (b * ty - d * tx) / det
+        invTy = (c * tx - a * ty) / det
+    }
+
+    private fun findOld(x:Int, y:Int): Point{
+        val x = invA * (x + minX) + invB * (y + minY) + invTx
+        val y = invC * (x + minX) + invD * (y + minY) + invTy
+
+        return Point(x.toInt(),y.toInt())
+    }
+
     private fun affineTransform(currentBitmap: Bitmap) {
+
+
         if (startPoints.size < 3 || finishPoints.size < 3) {
             Toast.makeText(this, "Мало точек", Toast.LENGTH_SHORT).show()
             return
         }
+
         calculateCoeffs()
+        calculateInverseCoefficients()
 
         val width = currentBitmap.width
         val height = currentBitmap.height
+        val (newWidth, newHeight) = calculateNewSize(currentBitmap)
 
-        val (newWidth, newHeight) = calculateNewSize()
-        val isScalingUp = newWidth > currentBitmap.width || newHeight > currentBitmap.height
+        scale = Math.max((newWidth.toFloat()/width.toFloat()),(newHeight.toFloat()/height.toFloat()))
 
-        val transformedBitmap = Bitmap.createBitmap(width, height, currentBitmap.config)
+        Toast.makeText(this, "$scale", Toast.LENGTH_SHORT).show()
 
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                val newX = a * x + b * y + tx
-                val newY = c * x + d * y + ty
+        val transformedBitmap = Bitmap.createBitmap(newWidth, newHeight, currentBitmap.config)
 
-                val color = if (newX < 0 || newX >= width || newY < 0 || newY >= height) {
-                    Color.TRANSPARENT
-                } else {
-                    if (isScalingUp) {
-                        getBilinearColor(currentBitmap, newX, newY)
-                    } else {
-                        getTrilinearColor(currentBitmap, newX, newY)
+        for (y in 0 until newHeight) {
+            for (x in 0 until newWidth) {
+                val newPoint: Point = findOld(x,y)
+
+
+                val color = if (newPoint.x in 0 until width && newPoint.y in 0 until height){
+                    if (scale > 1f) {
+                        getBilinearColor(currentBitmap, newPoint.x.toFloat(), newPoint.y.toFloat())
                     }
+                    else {
+                        getTrilinearInterpolate(currentBitmap, newPoint.x, newPoint.y)
+                    }
+                }
+                else {
+                    Color.TRANSPARENT
                 }
                 transformedBitmap.setPixel(x, y, color)
             }
         }
 
         imageView.setImageBitmap(transformedBitmap)
+        this.currentBitmap = transformedBitmap
+        conditions.add(transformedBitmap)
+        currentIndex++
     }
-
-    private fun distance(p1: Point, p2: Point): Float {
-        return sqrt(((p2.x - p1.x).toDouble()).pow(2.0) + (p2.y - p1.y).toDouble().pow(2.0)).toFloat()
-    }
-
 
     private fun getBilinearColor(bitmap: Bitmap, x: Float, y: Float): Int {
         val x1 = x.toInt()
@@ -318,11 +405,10 @@ class AffineActivity : BaseFiltersActivity() {
         val thirdColor = bitmap.getPixel(x2, y1)
         val fourthColor = bitmap.getPixel(x2, y2)
 
-        var red = bilinearInterpolate(Color.red(firstColor), Color.red(thirdColor), Color.red(secondColor), Color.red(fourthColor), x - x1, y - y1)
-        var green = bilinearInterpolate(Color.green(firstColor), Color.green(thirdColor), Color.green(secondColor), Color.green(fourthColor), x - x1, y - y1)
-        var blue = bilinearInterpolate(Color.blue(firstColor), Color.blue(thirdColor), Color.blue(secondColor), Color.blue(fourthColor), x - x1, y - y1)
-        var a = bilinearInterpolate(Color.alpha(firstColor), Color.alpha(thirdColor), Color.alpha(secondColor), Color.alpha(fourthColor), x - x1, y - y1)
-
+        val red = bilinearInterpolate(Color.red(firstColor), Color.red(thirdColor), Color.red(secondColor), Color.red(fourthColor), x - x1, y - y1)
+        val green = bilinearInterpolate(Color.green(firstColor), Color.green(thirdColor), Color.green(secondColor), Color.green(fourthColor), x - x1, y - y1)
+        val blue = bilinearInterpolate(Color.blue(firstColor), Color.blue(thirdColor), Color.blue(secondColor), Color.blue(fourthColor), x - x1, y - y1)
+        val a = bilinearInterpolate(Color.alpha(firstColor), Color.alpha(thirdColor), Color.alpha(secondColor), Color.alpha(fourthColor), x - x1, y - y1)
 
         return Color.argb(a,red, green, blue)
     }
@@ -333,25 +419,11 @@ class AffineActivity : BaseFiltersActivity() {
         return (a * (1 - ty) + b * ty).toInt()
     }
 
-    private fun getTrilinearColor(bitmap: Bitmap, x: Float, y: Float): Int {
-        val lowerBitmap = bitmap
-        val upperBitmap = bitmap
+    private fun getTrilinearInterpolate(currentBitmap: Bitmap,x:Int,y:Int): Int{
+        val color = currentBitmap.getPixel((x.toFloat()).toInt(),(y.toFloat()).toInt())
+        var z = scale - scale.roundToInt()
+        return (( 1 - z ) * color + z * color).toInt()
 
-        val lowerColor = getBilinearColor(upperBitmap, x, y)
-        val upperColor = getBilinearColor(upperBitmap, x, y)
-
-        val z = 0.5f
-        val red = linearInterpolate(Color.red(lowerColor), Color.red(upperColor), z)
-        val green = linearInterpolate(Color.green(lowerColor), Color.green(upperColor), z)
-        val blue = linearInterpolate(Color.blue(lowerColor), Color.blue(upperColor), z)
-        val alpha = linearInterpolate(Color.alpha(lowerColor), Color.alpha(upperColor), z)
-
-        return Color.argb(alpha, red, green, blue)
-    }
-
-
-    private fun linearInterpolate(c0: Int, c1: Int, t: Float): Int {
-        return (c0 * (1 - t) + c1 * t).toInt()
     }
 
     private fun getPixelSafe(currentBitmap: Bitmap, x: Int, y: Int): Int {
